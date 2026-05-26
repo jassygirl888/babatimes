@@ -32,7 +32,7 @@
     h1 {
       font-family: "Roboto Slab", serif;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-size: clamp(28px, 7vw, 44px);
     }
 
@@ -97,9 +97,19 @@
     }
 
     .keyrow {
+      /* display: flex;
+      justify-content: center;
+      gap: 6px; */
+
       display: flex;
       justify-content: center;
       gap: 6px;
+
+      width: 100%;
+      max-width: 420px;
+
+      padding: 0 4px;
+      box-sizing: border-box;
     }
 
     .key {
@@ -115,7 +125,7 @@
       font-size: clamp(12px, 3.5vw, 16px);
     
       color: #111;
-      min-width: 0;        /* IMPORTANT for flex shrink */
+      min-width: 28px;        /* IMPORTANT for flex shrink */
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -123,6 +133,7 @@
       /* min-width: 60px; */
       /* min-width: 78px; */
       flex: 1.5;
+      min-width: 52px;
     }
 
   </style>
