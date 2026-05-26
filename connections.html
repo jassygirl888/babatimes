@@ -2,11 +2,15 @@
 <html>
 <head>
   <title>Connections</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <style>
     body {
-      font-family: Arial;
+      font-family: 
+        "Franklin Gothic Medium",
+        "Franklin Gothic",
+        sans-serif;
       margin: 0;
       min-height: 100vh;
       display: flex;
@@ -17,17 +21,35 @@
       text-align: center;
     }
 
+    h1 {
+      font-family: "Roboto Slab", serif;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
     .home {
       position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
+    
       padding: 10px 16px;
-      border: none;
-      border-radius: 8px;
-      background: #333;
-      color: white;
+      border: 2px solid #333;
+      border-radius: 20px;
+      background: white;
+      color: #333;
+    
+      font-size: 13px;
+      font-weight: bold;
+    
       cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .home:hover {
+      background: #f0f0f0;
     }
 
     #game {
@@ -182,9 +204,9 @@
 
 <body>
 
-<button class="home" onclick="location.href='index.html'">🏠 Home</button>
+<button class="home" onclick="location.href='index.html'">&lt;</button>
 
-<h2>Connections</h2>
+<h1>Connections</h1>
 
 <div id="game">
   <div id="solved"></div>
