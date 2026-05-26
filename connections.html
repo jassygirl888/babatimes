@@ -49,22 +49,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-
       border: 2px solid #ccc;
       border-radius: 12px;
       background: white;
       cursor: pointer;
-
       font-size: 11px;
       font-weight: bold;
       text-align: center;
       line-height: 1.1;
-
       padding: 6px;
       box-sizing: border-box;
-
       word-break: break-word;
       overflow-wrap: break-word;
+      transition: background 0.15s, border-color 0.15s;
     }
 
     .tile.selected {
@@ -72,7 +69,7 @@
       border-color: #999;
     }
 
-    /* SOLVED SECTION — NYT style: one wide rectangle per category */
+    /* SOLVED SECTION */
     #solved {
       display: flex;
       flex-direction: column;
@@ -106,18 +103,78 @@
       color: #1a1a1a;
     }
 
+    /* MISTAKES */
+    #mistakes-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #mistakes-label {
+      font-size: 13px;
+      color: #555;
+    }
+
+    #mistakes-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #333;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .dot.lost {
+      background: #ccc;
+      transform: scale(0.85);
+    }
+
+    /* BUTTONS ROW */
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
     button {
       padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
+      border: 2px solid #333;
+      border-radius: 20px;
+      background: white;
+      color: #333;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    button:hover {
+      background: #f0f0f0;
+    }
+
+    button.primary {
       background: #333;
       color: white;
-      cursor: pointer;
+    }
+
+    button.primary:hover {
+      background: #555;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
     }
 
     #status {
       font-weight: bold;
       height: 20px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -134,7 +191,21 @@
 
   <div class="grid" id="grid"></div>
 
-  <button onclick="submitGroup()">Submit</button>
+  <div id="mistakes-area">
+    <div id="mistakes-label">Mistakes remaining:</div>
+    <div id="mistakes-dots">
+      <div class="dot" id="dot-0"></div>
+      <div class="dot" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+      <div class="dot" id="dot-3"></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button onclick="shuffleGrid()">Shuffle</button>
+    <button onclick="deselectAll()">Deselect All</button>
+    <button class="primary" onclick="submitGroup()">Submit</button>
+  </div>
 
   <p id="status"></p>
 
@@ -143,29 +214,29 @@
 <script>
 
 const groups = [
-  { name: "FIRST DATE ORDERS", words: ["PIZZA","PISTACHIO","MOZZARELLA BALLS","RAVIOLI"] },
+  { name: "FIRST DATE", words: ["PIZZA","PISTACHIO GELATO","MOZZARELLA BALLS","RAVIOLI"] },
   { name: "DATING SPOTS", words: ["AMANO","KODAWARI","MINANTE","TALES AND FEELINGS"] },
   { name: "JUST NOT OUR GOVERNMENT NAMES", words: ["BABA","LOVEY","LANGLING","BABY"] },
-  { name: "FIRST TREATS", words: ["FRIES & MCFLURRY","COCO MILKTEA","STARBS","COOKIES"] }
+  { name: "FIRST TREATS", words: ["FRIES & MCFLURRY","COCO MILKTEA","VANILLA COLD BREW","HELLA GOOD COOKIES"] }
 ];
 
 const colors = [
-  "#f9df6d", // yellow
-  "#6aaa64", // green
-  "#a0c4ff", // blue
-  "#cdb4db"  // purple
+  "#f9df6d",
+  "#6aaa64",
+  "#a0c4ff",
+  "#cdb4db"
 ];
 
-let allWords = groups.flatMap(g => g.words)
-  .sort(() => Math.random() - 0.5);
-
+let allWords = groups.flatMap(g => g.words).sort(() => Math.random() - 0.5);
 let selected = [];
 let solvedCount = 0;
+let mistakes = 0;
+const MAX_MISTAKES = 4;
 
 function renderGrid() {
   document.getElementById("grid").innerHTML =
     allWords.map(w =>
-      `<div class="tile" onclick="toggle(this,'${w}')">${w}</div>`
+      `<div class="tile" onclick="toggle(this,${JSON.stringify(w)})">${w}</div>`
     ).join("");
 }
 
@@ -178,6 +249,28 @@ function toggle(el, word) {
   } else if (selected.length < 4) {
     selected.push(word);
     el.classList.add("selected");
+  }
+}
+
+function deselectAll() {
+  selected = [];
+  document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
+}
+
+function shuffleGrid() {
+  deselectAll();
+  allWords = allWords.sort(() => Math.random() - 0.5);
+  renderGrid();
+}
+
+function updateDots() {
+  for (let i = 0; i < MAX_MISTAKES; i++) {
+    const dot = document.getElementById("dot-" + i);
+    if (i < mistakes) {
+      dot.classList.add("lost");
+    } else {
+      dot.classList.remove("lost");
+    }
   }
 }
 
@@ -194,11 +287,8 @@ function submitGroup() {
   });
 
   if (match) {
-
-    // Remove from active pool
     allWords = allWords.filter(w => !match.words.includes(w));
 
-    // Build NYT-style single wide rectangle
     let row = document.createElement("div");
     row.className = "solved-row";
     row.style.background = colors[solvedCount];
@@ -213,24 +303,38 @@ function submitGroup() {
 
     row.appendChild(title);
     row.appendChild(words);
-
     document.getElementById("solved").appendChild(row);
 
     solvedCount++;
     renderGrid();
+    document.getElementById("status").innerText = "";
 
-  } else if (almost) {
-    document.getElementById("status").innerText =
-      "OH! So close… One away 👀";
+    if (solvedCount === groups.length) {
+      document.getElementById("status").innerText = "You got them all! 🎉";
+    }
+
   } else {
-    document.getElementById("status").innerText =
-      "Eh? Nope! ❌";
+    mistakes++;
+    updateDots();
+
+    if (almost) {
+      document.getElementById("status").innerText = "OH! So close… One away 👀";
+    } else {
+      document.getElementById("status").innerText = "Eh? Nope! ❌";
+    }
+
+    if (mistakes >= MAX_MISTAKES) {
+      document.getElementById("status").innerText = "No more tries! 💔";
+      document.querySelectorAll(".tile").forEach(t => {
+        t.style.pointerEvents = "none";
+        t.style.opacity = "0.5";
+      });
+      document.querySelector("button.primary").disabled = true;
+    }
   }
 
   selected = [];
-  document.querySelectorAll(".tile").forEach(t =>
-    t.classList.remove("selected")
-  );
+  document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
 }
 
 </script>
