@@ -95,6 +95,13 @@
       border-color: #999;
     }
 
+    #status {
+      margin: 10px 0 12px;
+      font-weight: bold;
+      font-size: 14px;
+      height: 20px;
+    }
+    
     #solved {
       display: flex;
       flex-direction: column;
@@ -207,7 +214,7 @@
 <button class="home" onclick="location.href='index.html'">&lt;</button>
 
 <h1>Connections</h1>
-
+ <p id="status"></p>
 <div id="game">
   <div id="solved"></div>
 
@@ -229,8 +236,6 @@
     <button onclick="deselectAll()">Deselect All</button>
     <button class="primary" onclick="submitGroup()">Submit</button>
   </div>
-
-  <p id="status"></p>
 </div>
 
 <script>
