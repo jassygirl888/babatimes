@@ -5,6 +5,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- SAME TITLE FONT STYLE AS BABA TIMES -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
@@ -27,11 +28,10 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* TITLE (same style as Baba Times) */
+    /* TITLE (same as Baba Times) */
     h2 {
       font-family: "Roboto Slab", serif;
       font-weight: 700;
-      font-size: clamp(28px, 6vw, 38px);
       margin-bottom: 10px;
     }
 
@@ -51,6 +51,8 @@
       font-weight: bold;
 
       cursor: pointer;
+
+      -webkit-tap-highlight-color: transparent;
     }
 
     #board {
@@ -106,6 +108,9 @@
       border-radius: 4px;
 
       font-weight: bold;
+
+      color: #111; /* FIX BLUE TEXT ISSUE */
+
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -126,12 +131,18 @@
 
 <p id="status"></p>
 
+<!-- KEYBOARD -->
 <div class="keyboard">
+
+  <!-- ROW 1 -->
   <div class="keyrow" id="row1"></div>
+
+  <!-- ROW 2 -->
   <div class="keyrow" id="row2"></div>
 
-  <!-- bottom row with ENTER + ZXC... + ERASE -->
+  <!-- ROW 3 -->
   <div class="keyrow" id="row3"></div>
+
 </div>
 
 <script>
@@ -148,7 +159,7 @@ const keys = [
   "ZXCVBNM"
 ];
 
-// build keyboard
+// build keyboard rows
 keys.forEach((row, i) => {
   let container = document.getElementById("row" + (i+1));
 
@@ -157,36 +168,31 @@ keys.forEach((row, i) => {
     key.innerText = k;
     key.className = "key";
     key.id = "key-" + k;
+
     key.onclick = () => handleKey(k);
     container.appendChild(key);
   });
 });
 
-/* ENTER + ERASE */
-const row3 = document.getElementById("row3");
+// ADD ENTER (left of Z row)
+let row3 = document.getElementById("row3");
 
-const enterKey = document.createElement("button");
-enterKey.innerText = "ENTER";
-enterKey.className = "key wide";
-enterKey.onclick = submitGuess;
-row3.appendChild(enterKey);
+let enter = document.createElement("button");
+enter.innerText = "ENTER";
+enter.className = "key wide";
+enter.onclick = submitGuess;
 
-"ZXCVBNM".split("").forEach(k => {
-  let key = document.createElement("button");
-  key.innerText = k;
-  key.className = "key";
-  key.id = "key-" + k;
-  key.onclick = () => handleKey(k);
-  row3.appendChild(key);
-});
+row3.insertBefore(enter, row3.firstChild);
 
-const eraseKey = document.createElement("button");
-eraseKey.innerText = "⌫";
-eraseKey.className = "key wide";
-eraseKey.onclick = eraseLetter;
-row3.appendChild(eraseKey);
+// ADD ERASE (right of Z row)
+let erase = document.createElement("button");
+erase.innerText = "⌫";
+erase.className = "key wide";
+erase.onclick = backspace;
 
-/* BOARD */
+row3.appendChild(erase);
+
+// create board
 for (let i = 0; i < 5; i++) {
   let row = document.createElement("div");
   row.className = "row";
@@ -200,8 +206,6 @@ for (let i = 0; i < 5; i++) {
   document.getElementById("board").appendChild(row);
 }
 
-/* FUNCTIONS */
-
 function handleKey(k) {
   if (tries >= 5) return;
 
@@ -212,9 +216,11 @@ function handleKey(k) {
   updateTiles();
 }
 
-function eraseLetter() {
-  current = current.slice(0, -1);
-  updateTiles();
+function backspace() {
+  if (current.length > 0) {
+    current = current.slice(0, -1);
+    updateTiles();
+  }
 }
 
 function updateTiles() {
