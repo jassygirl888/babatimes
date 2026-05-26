@@ -5,6 +5,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
 
     body {
@@ -25,6 +27,14 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* TITLE (same style as Baba Times) */
+    h2 {
+      font-family: "Roboto Slab", serif;
+      font-weight: 700;
+      font-size: clamp(28px, 6vw, 38px);
+      margin-bottom: 10px;
+    }
+
     .home {
       position: fixed;
       bottom: 20px;
@@ -41,17 +51,6 @@
       font-weight: bold;
 
       cursor: pointer;
-
-      transition: background 0.15s, color 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .home:hover {
-      background: #f0f0f0;
-    }
-
-    h2 {
-      margin-bottom: 10px;
     }
 
     #board {
@@ -83,6 +82,7 @@
       background: white;
     }
 
+    /* KEYBOARD */
     .keyboard {
       display: flex;
       flex-direction: column;
@@ -106,19 +106,11 @@
       border-radius: 4px;
 
       font-weight: bold;
-
       -webkit-tap-highlight-color: transparent;
     }
 
-    .submit-btn {
-      margin-top: 10px;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      background: #6aaa64;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+    .wide {
+      min-width: 60px;
     }
 
   </style>
@@ -132,13 +124,13 @@
 
 <div id="board"></div>
 
-<button class="submit-btn" onclick="submitGuess()">Submit</button>
-
 <p id="status"></p>
 
 <div class="keyboard">
   <div class="keyrow" id="row1"></div>
   <div class="keyrow" id="row2"></div>
+
+  <!-- bottom row with ENTER + ZXC... + ERASE -->
   <div class="keyrow" id="row3"></div>
 </div>
 
@@ -165,13 +157,36 @@ keys.forEach((row, i) => {
     key.innerText = k;
     key.className = "key";
     key.id = "key-" + k;
-
     key.onclick = () => handleKey(k);
     container.appendChild(key);
   });
 });
 
-// create board
+/* ENTER + ERASE */
+const row3 = document.getElementById("row3");
+
+const enterKey = document.createElement("button");
+enterKey.innerText = "ENTER";
+enterKey.className = "key wide";
+enterKey.onclick = submitGuess;
+row3.appendChild(enterKey);
+
+"ZXCVBNM".split("").forEach(k => {
+  let key = document.createElement("button");
+  key.innerText = k;
+  key.className = "key";
+  key.id = "key-" + k;
+  key.onclick = () => handleKey(k);
+  row3.appendChild(key);
+});
+
+const eraseKey = document.createElement("button");
+eraseKey.innerText = "⌫";
+eraseKey.className = "key wide";
+eraseKey.onclick = eraseLetter;
+row3.appendChild(eraseKey);
+
+/* BOARD */
 for (let i = 0; i < 5; i++) {
   let row = document.createElement("div");
   row.className = "row";
@@ -185,6 +200,8 @@ for (let i = 0; i < 5; i++) {
   document.getElementById("board").appendChild(row);
 }
 
+/* FUNCTIONS */
+
 function handleKey(k) {
   if (tries >= 5) return;
 
@@ -192,6 +209,11 @@ function handleKey(k) {
     current += k;
   }
 
+  updateTiles();
+}
+
+function eraseLetter() {
+  current = current.slice(0, -1);
   updateTiles();
 }
 
