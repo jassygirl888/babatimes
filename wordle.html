@@ -3,9 +3,16 @@
 <head>
   <title>Wordle</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
+
     body {
-      font-family: Arial;
+      font-family:
+        "Franklin Gothic Medium",
+        "Franklin Gothic",
+        sans-serif;
+
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -14,6 +21,8 @@
       margin: 0;
       background: #fafafa;
       text-align: center;
+
+      -webkit-tap-highlight-color: transparent;
     }
 
     .home {
@@ -21,12 +30,28 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
+
       padding: 10px 16px;
-      border: none;
-      border-radius: 8px;
-      background: #333;
-      color: white;
+      border: 2px solid #333;
+      border-radius: 20px;
+      background: white;
+      color: #333;
+
+      font-size: 13px;
+      font-weight: bold;
+
       cursor: pointer;
+
+      transition: background 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .home:hover {
+      background: #f0f0f0;
+    }
+
+    h2 {
+      margin-bottom: 10px;
     }
 
     #board {
@@ -43,14 +68,19 @@
     }
 
     .tile {
-      width: 45px;
-      height: 45px;
+      width: clamp(36px, 9vw, 45px);
+      height: clamp(36px, 9vw, 45px);
+
       border: 2px solid #ccc;
       display: flex;
       align-items: center;
       justify-content: center;
+
       font-weight: bold;
-      font-size: 20px;
+      font-size: clamp(16px, 4.5vw, 20px);
+
+      color: #111;
+      background: white;
     }
 
     .keyboard {
@@ -69,15 +99,15 @@
     .key {
       padding: 10px;
       min-width: 30px;
+
       border: none;
       background: #ddd;
       cursor: pointer;
       border-radius: 4px;
-      font-weight: bold;
-    }
 
-    .wide {
-      min-width: 60px;
+      font-weight: bold;
+
+      -webkit-tap-highlight-color: transparent;
     }
 
     .submit-btn {
@@ -90,12 +120,13 @@
       font-weight: bold;
       cursor: pointer;
     }
+
   </style>
 </head>
 
 <body>
 
-<button class="home" onclick="location.href='index.html'"> Home</button>
+<button class="home" onclick="location.href='index.html'">&lt;</button>
 
 <h2>Wordle</h2>
 
@@ -117,7 +148,7 @@ const ANSWER = "LOVEY";
 let current = "";
 let tries = 0;
 
-const keyState = {}; // track best color per key
+const keyState = {};
 
 const keys = [
   "QWERTYUIOP",
@@ -181,12 +212,11 @@ function submitGuess() {
 
   for (let i = 0; i < 5; i++) {
     let letter = current[i];
-    let key = document.getElementById("key-" + letter);
 
     if (letter === ANSWER[i]) {
-      tiles[i].style.background = "#6aaa64";
+      tiles[i].style.background = "#387f31";
       tiles[i].style.color = "white";
-      updateKey(letter, "#6aaa64");
+      updateKey(letter, "#387f31");
     } 
     else if (ANSWER.includes(letter)) {
       tiles[i].style.background = "#c9b458";
@@ -210,9 +240,9 @@ function submitGuess() {
 
 function updateKey(letter, color) {
   const priority = {
-    "#6aaa64": 3, // green
-    "#c9b458": 2, // yellow
-    "#787c7e": 1  // gray
+    "#387f31": 3,
+    "#c9b458": 2,
+    "#787c7e": 1
   };
 
   if (!keyState[letter] || priority[color] > priority[keyState[letter]]) {
