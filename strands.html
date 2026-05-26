@@ -36,6 +36,14 @@
       font-size: 13px;
       font-weight: bold;
       cursor: pointer;
+      z-index: 10;
+    }
+
+    .grid-wrap {
+      position: relative;
+      display: inline-block;
+      margin-top: 10px;
+      touch-action: none; /* IMPORTANT for drag */
     }
 
     .grid {
@@ -51,10 +59,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       user-select: none;
       font-weight: bold;
       background: white;
+      position: relative;
+      z-index: 2;
+      cursor: pointer;
     }
 
     .cell.selected {
@@ -64,6 +74,14 @@
     .cell.found {
       background: #3d9cba;
       color: white;
+    }
+
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
     }
 
     #current {
@@ -90,7 +108,10 @@
 <h1>Strands</h1>
 <p>WHERE WE STARTED EATING</p>
 
-<div class="grid" id="grid"></div>
+<div class="grid-wrap" id="wrap">
+  <svg id="lines"></svg>
+  <div class="grid" id="grid"></div>
+</div>
 
 <p id="current"></p>
 
@@ -98,45 +119,38 @@
 
 <script>
 
-const size = 6;
-
-/* 1. GRID LETTERS (fixed, meaningful layout) */
-const letters = [
-  "A","M","A","N","O","X",
-  "M","I","N","A","N","T",
-  "T","A","L","E","S","A",
-  "B","E","L","L","A","M",
-  "B","U","R","N","T","B",
-  "E","A","N","X","X","X"
+const themeWords = [
+  "AMANO",
+  "MINANTE",
+  "TALESANDFEELINGS",
+  "BELLAMADEUS",
+  "BURNTBEAN"
 ];
 
-/* 2. SOLUTION PATHS (REAL STRANDS ENGINE) */
-const solutions = {
-  AMANO: [0,1,2,3,4],
-  MINANTE: [6,7,8,9,10,11,12],
-  TALESANDFEELINGS: [12,13,14,15,16,17],
-  BELLAMADEUS: [18,19,20,21,22,23],
-  BURNTBEAN: [24,25,26,27,28,29,30,31]
-};
+const spangram = "WHEREWESTARTEDEATING";
+const size = 6;
 
-const spangramPath = [0,6,12,18,24,30]; // simple demo path
+let letters = themeWords.join("").split("").sort(() => Math.random() - 0.5);
+
+let grid = letters.map((letter, i) => ({
+  letter,
+  row: Math.floor(i / size),
+  col: i % size,
+  found: false
+}));
 
 let selected = [];
-let found = new Set();
-let grid = [];
+let found = [];
 
-for (let i = 0; i < letters.length; i++) {
-  grid.push({
-    letter: letters[i],
-    row: Math.floor(i / size),
-    col: i % size,
-    found: false
-  });
-}
+const gridEl = document.getElementById("grid");
+const svg = document.getElementById("lines");
+const wrap = document.getElementById("wrap");
+
+let isDragging = false;
 
 function render() {
-  const el = document.getElementById("grid");
-  el.innerHTML = "";
+
+  gridEl.innerHTML = "";
 
   grid.forEach((c, i) => {
 
@@ -147,62 +161,147 @@ function render() {
     if (selected.includes(i)) div.classList.add("selected");
     if (c.found) div.classList.add("found");
 
-    div.onclick = () => pick(i);
+    div.dataset.index = i;
 
-    el.appendChild(div);
+    gridEl.appendChild(div);
   });
+
+  drawLines();
 }
 
-/* 3. ADJACENCY (8-direction real Strands rule) */
-function pick(i) {
+function indexFromPoint(x, y) {
+
+  const el = document.elementFromPoint(x, y);
+  if (!el || !el.classList.contains("cell")) return null;
+  return Number(el.dataset.index);
+}
+
+function isAdjacent(a, b) {
+  const A = grid[a];
+  const B = grid[b];
+
+  return Math.abs(A.row - B.row) <= 1 &&
+         Math.abs(A.col - B.col) <= 1;
+}
+
+/* =========================
+   DRAG START
+========================= */
+wrap.addEventListener("mousedown", startDrag);
+wrap.addEventListener("touchstart", startDrag);
+
+function startDrag(e) {
+  isDragging = true;
+  selected = [];
+
+  handleMove(e);
+}
+
+/* =========================
+   DRAG MOVE
+========================= */
+wrap.addEventListener("mousemove", handleMove);
+wrap.addEventListener("touchmove", handleMove);
+
+function handleMove(e) {
+
+  if (!isDragging) return;
+
+  let x = e.touches ? e.touches[0].clientX : e.clientX;
+  let y = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const i = indexFromPoint(x, y);
+  if (i === null) return;
+
+  if (grid[i].found) return;
 
   if (selected.includes(i)) return;
 
   if (selected.length > 0) {
-    const last = grid[selected[selected.length - 1]];
-    const curr = grid[i];
-
-    const dr = Math.abs(last.row - curr.row);
-    const dc = Math.abs(last.col - curr.col);
-
-    if (dr > 1 || dc > 1) return;
+    const last = selected[selected.length - 1];
+    if (!isAdjacent(last, i)) return;
   }
 
   selected.push(i);
-
-  document.getElementById("current").innerText =
-    selected.map(x => grid[x].letter).join("");
-
+  updateCurrent();
   render();
 }
 
-/* 4. CHECK PATH MATCH */
+/* =========================
+   DRAG END
+========================= */
+window.addEventListener("mouseup", endDrag);
+window.addEventListener("touchend", endDrag);
+
+function endDrag() {
+  isDragging = false;
+}
+
+/* =========================
+   CURRENT WORD
+========================= */
+function updateCurrent() {
+  document.getElementById("current").innerText =
+    selected.map(i => grid[i].letter).join("");
+}
+
+/* =========================
+   LINES
+========================= */
+function drawLines() {
+
+  const cells = document.querySelectorAll(".cell");
+  const rect = wrap.getBoundingClientRect();
+
+  svg.setAttribute("width", rect.width);
+  svg.setAttribute("height", rect.height);
+  svg.innerHTML = "";
+
+  for (let i = 0; i < selected.length - 1; i++) {
+
+    const a = cells[selected[i]].getBoundingClientRect();
+    const b = cells[selected[i + 1]].getBoundingClientRect();
+
+    const x1 = a.left - rect.left + 25;
+    const y1 = a.top - rect.top + 25;
+    const x2 = b.left - rect.left + 25;
+    const y2 = b.top - rect.top + 25;
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke", "#666");
+    line.setAttribute("stroke-width", "3");
+    line.setAttribute("stroke-linecap", "round");
+
+    svg.appendChild(line);
+  }
+}
+
+/* =========================
+   SUBMIT
+========================= */
 function submitWord() {
 
-  for (const word in solutions) {
+  const word = selected.map(i => grid[i].letter).join("");
 
-    const path = solutions[word];
+  if (themeWords.includes(word) && !found.includes(word)) {
 
-    if (arraysEqual(path, selected)) {
-
-      path.forEach(i => grid[i].found = true);
-      found.add(word);
-    }
+    found.push(word);
+    selected.forEach(i => grid[i].found = true);
   }
 
-  // spangram check
-  if (arraysEqual(spangramPath, selected)) {
-    spangramPath.forEach(i => grid[i].found = true);
+  else if (word === spangram) {
+
+    selected.forEach(i => grid[i].found = true);
   }
 
   selected = [];
-  document.getElementById("current").innerText = "";
-
+  updateCurrent();
   render();
-}
-
-function arraysEqual(a, b) {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
 render();
