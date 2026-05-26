@@ -302,7 +302,7 @@ function updateDots() {
 
   for (let i = 0; i < MAX_MISTAKES; i++) {
 
-    const dot = document.getElementById("dot-" + i);
+    const dot = document.getElementById("dot-" + (MAX_MISTAKES - 1 - i));
 
     if (i < mistakes) {
       dot.classList.add("lost");
