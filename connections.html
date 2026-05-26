@@ -36,7 +36,6 @@
       align-items: center;
     }
 
-    /* ACTIVE GRID */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -62,6 +61,9 @@
       word-break: break-word;
       overflow-wrap: break-word;
       transition: background 0.15s, border-color 0.15s;
+
+      user-select: none;
+      pointer-events: auto;
     }
 
     .tile.selected {
@@ -69,7 +71,6 @@
       border-color: #999;
     }
 
-    /* SOLVED SECTION */
     #solved {
       display: flex;
       flex-direction: column;
@@ -103,7 +104,6 @@
       color: #1a1a1a;
     }
 
-    /* MISTAKES */
     #mistakes-area {
       display: flex;
       flex-direction: column;
@@ -134,7 +134,6 @@
       transform: scale(0.85);
     }
 
-    /* BUTTONS ROW */
     .btn-row {
       display: flex;
       gap: 10px;
@@ -186,13 +185,13 @@
 <h2>Connections</h2>
 
 <div id="game">
-
   <div id="solved"></div>
 
   <div class="grid" id="grid"></div>
 
   <div id="mistakes-area">
     <div id="mistakes-label">Mistakes remaining:</div>
+
     <div id="mistakes-dots">
       <div class="dot" id="dot-0"></div>
       <div class="dot" id="dot-1"></div>
@@ -208,64 +207,101 @@
   </div>
 
   <p id="status"></p>
-
 </div>
 
 <script>
 
 const groups = [
-  { name: "FIRST DATE", words: ["PIZZA","PISTACHIO GELATO","MOZZARELLA BALLS","RAVIOLI"] },
-  { name: "DATING SPOTS", words: ["AMANO","KODAWARI","MINANTE","TALES AND FEELINGS"] },
-  { name: "JUST NOT OUR GOVERNMENT NAMES", words: ["BABA","LOVEY","LANGLING","BABY"] },
-  { name: "FIRST TREATS", words: ["FRIES & MCFLURRY","COCO MILKTEA","VANILLA COLD BREW","HELLA GOOD COOKIES"] }
+  {
+    name: "FIRST DATE ORDERS",
+    words: ["PIZZA","PISTACHIO","MOZZARELLA BALLS","RAVIOLI"]
+  },
+  {
+    name: "DATING SPOTS",
+    words: ["AMANO","KODAWARI","MINANTE","TALES AND FEELINGS"]
+  },
+  {
+    name: "JUST NOT OUR GOVERNMENT NAMES",
+    words: ["BABA","LOVEY","LANGLING","BABY"]
+  },
+  {
+    name: "FIRST TREATS",
+    words: ["FRIES & MCFLURRY","COCO MILKTEA","STARBS","COOKIES"]
+  }
 ];
 
-const colors = [
-  "#f9df6d",
-  "#6aaa64",
-  "#a0c4ff",
-  "#cdb4db"
-];
+const colors = ["#f9df6d", "#6aaa64", "#a0c4ff", "#cdb4db"];
 
-let allWords = groups.flatMap(g => g.words).sort(() => Math.random() - 0.5);
+let allWords = groups
+  .flatMap(g => g.words)
+  .sort(() => Math.random() - 0.5);
+
 let selected = [];
 let solvedCount = 0;
 let mistakes = 0;
+
 const MAX_MISTAKES = 4;
 
 function renderGrid() {
-  document.getElementById("grid").innerHTML =
-    allWords.map(w =>
-      `<div class="tile" onclick="toggle(this,${JSON.stringify(w)})">${w}</div>`
-    ).join("");
-}
 
-renderGrid();
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
 
-function toggle(el, word) {
-  if (selected.includes(word)) {
-    selected = selected.filter(x => x !== word);
-    el.classList.remove("selected");
-  } else if (selected.length < 4) {
-    selected.push(word);
-    el.classList.add("selected");
-  }
+  allWords.forEach(word => {
+
+    const tile = document.createElement("div");
+
+    tile.className = "tile";
+    tile.innerText = word;
+
+    // restore selected look
+    if (selected.includes(word)) {
+      tile.classList.add("selected");
+    }
+
+    // click selection
+    tile.onclick = function () {
+
+      // deselect
+      if (selected.includes(word)) {
+
+        selected = selected.filter(w => w !== word);
+        tile.classList.remove("selected");
+      }
+
+      // select
+      else if (selected.length < 4) {
+
+        selected.push(word);
+        tile.classList.add("selected");
+      }
+    };
+
+    grid.appendChild(tile);
+  });
 }
 
 function deselectAll() {
+
   selected = [];
-  document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
+  renderGrid();
 }
 
 function shuffleGrid() {
+
   deselectAll();
+
   allWords = allWords.sort(() => Math.random() - 0.5);
+
   renderGrid();
 }
 
 function updateDots() {
+
   for (let i = 0; i < MAX_MISTAKES; i++) {
+
     const dot = document.getElementById("dot-" + i);
+
     if (i < mistakes) {
       dot.classList.add("lost");
     } else {
@@ -275,67 +311,87 @@ function updateDots() {
 }
 
 function submitGroup() {
+
   if (selected.length !== 4) return;
 
-  let match = groups.find(g =>
+  const match = groups.find(g =>
     g.words.every(w => selected.includes(w))
   );
 
-  let almost = groups.find(g => {
-    let common = g.words.filter(w => selected.includes(w)).length;
-    return common === 3;
-  });
+  const almost = groups.find(g =>
+    g.words.filter(w => selected.includes(w)).length === 3
+  );
 
+  // CORRECT
   if (match) {
+
     allWords = allWords.filter(w => !match.words.includes(w));
 
-    let row = document.createElement("div");
+    const row = document.createElement("div");
+
     row.className = "solved-row";
     row.style.background = colors[solvedCount];
 
-    let title = document.createElement("div");
+    const title = document.createElement("div");
     title.className = "group-title";
     title.innerText = match.name;
 
-    let words = document.createElement("div");
+    const words = document.createElement("div");
     words.className = "group-words";
     words.innerText = match.words.join(", ");
 
     row.appendChild(title);
     row.appendChild(words);
+
     document.getElementById("solved").appendChild(row);
 
     solvedCount++;
-    renderGrid();
+
     document.getElementById("status").innerText = "";
 
     if (solvedCount === groups.length) {
-      document.getElementById("status").innerText = "You got them all! 🎉";
+      document.getElementById("status").innerText =
+        "You got them all! 🎉";
     }
 
-  } else {
+  }
+
+  // WRONG
+  else {
+
     mistakes++;
+
     updateDots();
 
     if (almost) {
-      document.getElementById("status").innerText = "OH! So close… One away 👀";
+      document.getElementById("status").innerText =
+        "OH! So close… One away 👀";
     } else {
-      document.getElementById("status").innerText = "Eh? Nope! ❌";
+      document.getElementById("status").innerText =
+        "Eh? Nope! ❌";
     }
 
     if (mistakes >= MAX_MISTAKES) {
-      document.getElementById("status").innerText = "No more tries! 💔";
+
+      document.getElementById("status").innerText =
+        "No more tries! 💔";
+
       document.querySelectorAll(".tile").forEach(t => {
+
         t.style.pointerEvents = "none";
         t.style.opacity = "0.5";
       });
+
       document.querySelector("button.primary").disabled = true;
     }
   }
 
   selected = [];
-  document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
+
+  renderGrid();
 }
+
+renderGrid();
 
 </script>
 
