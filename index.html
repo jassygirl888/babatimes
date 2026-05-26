@@ -1,43 +1,134 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Our Love Games 💛</title>
+  <title>Baba Times</title>
+
+  <!-- MOBILE VIEW -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+
     body {
-      font-family: Arial;
-      height: 100vh;
+      margin: 0;
+      min-height: 100vh;
+
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 0;
+
       background: #fafafa;
+
+      font-family:
+        "Franklin Gothic Medium",
+        "Franklin Gothic",
+        "ITC Franklin Gothic",
+        Arial,
+        sans-serif;
+
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     .menu {
+      width: min(420px, 92vw);
       text-align: center;
     }
 
-    button {
-      display: block;
-      margin: 10px;
-      padding: 12px 20px;
+    h1 {
+      margin-bottom: 28px;
+      font-size: clamp(28px, 7vw, 40px);
+    }
+
+    .game-btn {
+
+      width: 100%;
+
       border: none;
+      border-radius: 18px;
+
       background: #333;
       color: white;
-      border-radius: 8px;
+
       cursor: pointer;
+
+      padding: 24px 20px;
+
+      margin-bottom: 14px;
+
+      transition:
+        transform 0.15s,
+        opacity 0.15s;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      box-sizing: border-box;
+
+      -webkit-tap-highlight-color: transparent;
     }
+
+    .game-btn:hover {
+      opacity: 0.92;
+    }
+
+    .game-btn:active {
+      transform: scale(0.98);
+    }
+
+    .game-title {
+      font-size: clamp(24px, 6vw, 32px);
+      font-weight: bold;
+      line-height: 1.1;
+    }
+
+    .game-date {
+      margin-top: 6px;
+      font-size: clamp(12px, 3vw, 14px);
+      opacity: 0.8;
+      font-weight: normal;
+      letter-spacing: 0.3px;
+    }
+
   </style>
 </head>
 
 <body>
+
   <div class="menu">
+
     <h1>💛 Our Love Games 💛</h1>
 
-    <button onclick="location.href='wordle.html'">Wordle</button>
-    <button onclick="location.href='connections.html'">Connections</button>
-    <button onclick="location.href='strands.html'">Strands</button>
+    <button
+      class="game-btn"
+      onclick="location.href='wordle.html'">
+
+      <div class="game-title">Wordle</div>
+      <div class="game-date">May 29, 2026</div>
+
+    </button>
+
+    <button
+      class="game-btn"
+      onclick="location.href='connections.html'">
+
+      <div class="game-title">Connections</div>
+      <div class="game-date">May 29, 2026</div>
+
+    </button>
+
+    <button
+      class="game-btn"
+      onclick="location.href='strands.html'">
+
+      <div class="game-title">Strands</div>
+      <div class="game-date">May 29, 2026</div>
+
+    </button>
+
   </div>
+
 </body>
 </html>
