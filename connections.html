@@ -24,7 +24,7 @@
     h1 {
       font-family: "Roboto Slab", serif;
       font-weight: 700;
-      /* margin-bottom: 10px; */
+      margin-bottom: 5px;
     }
     
     .home {
@@ -245,25 +245,34 @@
 <script>
 
 const groups = [
-  {
-    name: "FIRST DATE ORDERS",
-    words: ["PIZZA","PISTACHIO GELATO","MOZZARELLA BALLS","RAVIOLI"]
-  },
-  {
-    name: "DATING SPOTS",
-    words: ["AMANO","KODAWARI","MINANTE","TALES AND FEELINGS"]
-  },
-  {
+    {
     name: "JUST NOT OUR GOVERNMENT NAMES",
+    color: "#fadf6e" // yellow
     words: ["BABA","LOVEY","LANGLING","BABY"]
   },
   {
+    name: "FIRST DATE ORDERS",
+    color: "#a0c45a" // green
+    words: ["PIZZA","PISTACHIO GELATO","MOZZARELLA BALLS","RAVIOLI"]
+  },
+  // {
+  //   name: "DATING SPOTS",
+  //   color: ""
+  //   words: ["AMANO","KODAWARI","MINANTE","TALES AND FEELINGS"]
+  // },
+  {
     name: "PADUDING TREATS",
+    color: "#b3c4f0" // blue
     words: ["FRIES & MCFLURRY","COCO MILKTEA","VANILLA COLD BREW","HELLA GOOD COOKIES"]
+  },
+  {
+    name: "BABA'S STARBUCKS LINE",
+    color: "#ba81c5" // purple
+    words: ["ICED BARISTA GRANDE","2 PUMPS WHITE MOCHA","STARS FOR EVERYONE","PWD DISCOUNT"]
   }
 ];
 
-const colors = ["#f9df6d", "#6aaa64", "#a0c4ff", "#cdb4db"];
+// const colors = ["#f9df6d", "#6aaa64", "#a0c4ff", "#cdb4db"];
 
 let allWords = groups
   .flatMap(g => g.words)
@@ -363,8 +372,9 @@ function submitGroup() {
     const row = document.createElement("div");
 
     row.className = "solved-row";
-    row.style.background = colors[solvedCount];
-
+    // row.style.background = colors[solvedCount];
+    row.style.background = match.color;
+    
     const title = document.createElement("div");
     title.className = "group-title";
     title.innerText = match.name;
