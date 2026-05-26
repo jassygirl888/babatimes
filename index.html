@@ -4,7 +4,6 @@
 <head>
   <title>Baba Times</title>
 
-  <!-- MOBILE VIEW -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -19,24 +18,24 @@
 
       background: #fafafa;
 
-      font-family:
-        "Franklin Gothic Medium",
-        "Franklin Gothic",
-        "ITC Franklin Gothic",
-        Arial,
-        sans-serif;
-
       padding: 20px;
       box-sizing: border-box;
     }
 
     .menu {
-      width: min(420px, 92vw);
-      text-align: center;
+      width: min(460px, 92vw);
     }
 
     h1 {
+      text-align: center;
+
       margin-bottom: 28px;
+
+      font-family:
+        "Franklin Gothic Medium",
+        "Franklin Gothic",
+        sans-serif;
+
       font-size: clamp(28px, 7vw, 40px);
     }
 
@@ -45,51 +44,105 @@
       width: 100%;
 
       border: none;
-      border-radius: 18px;
+      border-radius: 24px;
 
-      background: #333;
-      color: white;
+      padding: 30px 24px;
+
+      margin-bottom: 16px;
 
       cursor: pointer;
 
-      padding: 24px 20px;
+      text-align: left;
 
-      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      box-sizing: border-box;
 
       transition:
         transform 0.15s,
         opacity 0.15s;
 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      box-sizing: border-box;
-
       -webkit-tap-highlight-color: transparent;
     }
 
     .game-btn:hover {
-      opacity: 0.92;
+      opacity: 0.94;
     }
 
     .game-btn:active {
-      transform: scale(0.98);
+      transform: scale(0.985);
+    }
+
+    .wordle {
+      background: #bdbdbd;
+    }
+
+    .connections {
+      background: #cdb4db;
+    }
+
+    .strands {
+      background: #c9ddff;
     }
 
     .game-title {
-      font-size: clamp(24px, 6vw, 32px);
+
+      font-family:
+        "Franklin Gothic Medium",
+        "Franklin Gothic",
+        sans-serif;
+
+      font-size: clamp(26px, 6vw, 34px);
+
       font-weight: bold;
-      line-height: 1.1;
+
+      color: #111;
+
+      margin-bottom: 8px;
+    }
+
+    .game-desc {
+
+      font-family:
+        Arial,
+        sans-serif;
+
+      font-size: clamp(11px, 3vw, 13px);
+
+      color: #5f5f5f;
+
+      margin-bottom: 14px;
+
+      line-height: 1.35;
     }
 
     .game-date {
-      margin-top: 6px;
-      font-size: clamp(12px, 3vw, 14px);
-      opacity: 0.8;
-      font-weight: normal;
-      letter-spacing: 0.3px;
+
+      font-family:
+        "Franklin Gothic Medium",
+        "Franklin Gothic",
+        sans-serif;
+
+      font-size: clamp(13px, 3vw, 15px);
+
+      font-weight: bold;
+
+      color: #111;
+
+      margin-bottom: 4px;
+    }
+
+    .game-editor {
+
+      font-family:
+        Arial,
+        sans-serif;
+
+      font-size: clamp(10px, 2.6vw, 11px);
+
+      color: #777;
     }
 
   </style>
@@ -99,32 +152,65 @@
 
   <div class="menu">
 
-    <h1>💛 Our Love Games 💛</h1>
+    <h1>Baba Time</h1>
 
     <button
-      class="game-btn"
+      class="game-btn wordle"
       onclick="location.href='wordle.html'">
 
       <div class="game-title">Wordle</div>
-      <div class="game-date">May 29, 2026</div>
+
+      <div class="game-desc">
+        Guess the secret word in six tries.
+      </div>
+
+      <div class="game-date">
+        May 29, 2026
+      </div>
+
+      <div class="game-editor">
+        Edited by Jasmine Chua
+      </div>
 
     </button>
 
     <button
-      class="game-btn"
+      class="game-btn connections"
       onclick="location.href='connections.html'">
 
       <div class="game-title">Connections</div>
-      <div class="game-date">May 29, 2026</div>
+
+      <div class="game-desc">
+        Find the hidden groups between the words.
+      </div>
+
+      <div class="game-date">
+        May 29, 2026
+      </div>
+
+      <div class="game-editor">
+        Edited by Jasmine Chua
+      </div>
 
     </button>
 
     <button
-      class="game-btn"
+      class="game-btn strands"
       onclick="location.href='strands.html'">
 
       <div class="game-title">Strands</div>
-      <div class="game-date">May 29, 2026</div>
+
+      <div class="game-desc">
+        Search the board to uncover themed words.
+      </div>
+
+      <div class="game-date">
+        May 29, 2026
+      </div>
+
+      <div class="game-editor">
+        Edited by Jasmine Chua
+      </div>
 
     </button>
 
