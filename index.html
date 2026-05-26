@@ -37,30 +37,20 @@
     }
 
     .game-btn {
-
       width: 100%;
-
       border: none;
       border-radius: 24px;
-
       padding: 30px 24px;
-
       margin-bottom: 16px;
-
       cursor: pointer;
-
       text-align: left;
-
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-
       box-sizing: border-box;
-
       transition:
         transform 0.15s,
         opacity 0.15s;
-
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -84,18 +74,14 @@
       background: #b1ded7;
     }
 
-      .game-title {
+    .game-title {
         font-family: "Roboto Slab", serif;
         font-size: clamp(26px, 6vw, 34px);
         font-weight: 700;
         color: #111;
+        margin-top: 8px;
         margin-bottom: 4px;
       }
-      font-size: clamp(26px, 6vw, 34px);
-      font-weight: bold;
-      color: #111;
-      margin-bottom: 8px;
-    }
 
     .game-desc {
       font-family:
@@ -104,8 +90,9 @@
         sans-serif;
       font-size: clamp(11px, 3vw, 13px);
       color: #999;
-      margin-bottom: 18px;
+      margin-bottom: 25px;
       line-height: 1.35;
+      -webkit-tap-highlight-color: transparent;
     }
     
     .game-date {
@@ -115,7 +102,7 @@
         font-weight: 700;
         color: #111;
       }
-
+/* 
     .game-editor {
       font-family: 
         "Franklin Gothic Medium",
@@ -123,7 +110,7 @@
         sans-serif;
       font-size: clamp(10px, 2.2vw, 11px);
       color: #999;
-      /* font-weight: normal; */
+      font-weight: normal;
       margin-left: auto;
       text-align: right; 
 
@@ -134,7 +121,7 @@
       justify-content: space-between;
       align-items: center;
       width: 100%;
-    }
+    } */
   </style>
 </head>
 
@@ -154,7 +141,11 @@
         Guess the secret word in six tries.
       </div>
 
-      <div class="meta-row">
+      <div class="game-date">
+        May 29, 2026
+      </div>
+      
+      <!-- <div class="meta-row">
         <div class="game-date">
           May 29, 2026
         </div>
@@ -162,7 +153,7 @@
         <div class="game-editor">
           Edited by Jasmine Chua
         </div>
-      </div>
+      </div> -->
 
     </button>
 
@@ -176,7 +167,11 @@
         Find the hidden groups between the words.
       </div>
 
-      <div class="meta-row">
+      <div class="game-date">
+        May 29, 2026
+      </div>
+      
+      <!-- <div class="meta-row">
         <div class="game-date">
           May 29, 2026
         </div>
@@ -184,7 +179,7 @@
         <div class="game-editor">
           Edited by Jasmine Chua
         </div>
-      </div>
+      </div> -->
     </button>
 
     <button
@@ -197,7 +192,11 @@
         Search the board to uncover themed words.
       </div>
 
-      <div class="meta-row">
+      <div class="game-date">
+        May 29, 2026
+      </div>
+      
+      <!-- <div class="meta-row">
         <div class="game-date">
           May 29, 2026
         </div>
@@ -205,7 +204,7 @@
         <div class="game-editor">
           Edited by Jasmine Chua
         </div>
-      </div>
+      </div> -->
   </div>
 
 </body>
