@@ -29,10 +29,11 @@
     }
 
     /* TITLE (same as Baba Times) */
-    h2 {
+    h1 {
       font-family: "Roboto Slab", serif;
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      font-size: clamp(28px, 7vw, 44px);
     }
 
     .home {
@@ -102,27 +103,26 @@
     }
 
     .key {
-      /* padding: 10px; */
-      /* min-width: 30px; */
-
-      padding: 14px;
-      min-width: 38px;
-      
+      flex: 1;              /* KEY FIX: auto shrink/grow */
+      padding: 12px 0;
+    
       border: none;
       background: #ddd;
       cursor: pointer;
-      border-radius: 4px;
-
+      border-radius: 6px;
+    
       font-weight: bold;
-
-      color: #111; /* FIX BLUE TEXT ISSUE */
-
+      font-size: clamp(12px, 3.5vw, 16px);
+    
+      color: #111;
+      min-width: 0;        /* IMPORTANT for flex shrink */
       -webkit-tap-highlight-color: transparent;
     }
 
     .wide {
       /* min-width: 60px; */
-      min-width: 78px;
+      /* min-width: 78px; */
+      flex: 1.5;
     }
 
   </style>
