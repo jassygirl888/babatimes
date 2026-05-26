@@ -70,8 +70,10 @@
     }
 
     .tile {
-      width: clamp(36px, 9vw, 45px);
-      height: clamp(36px, 9vw, 45px);
+      /* width: clamp(36px, 9vw, 45px);
+      height: clamp(36px, 9vw, 45px); */
+      width: clamp(44px, 11vw, 56px);
+      height: clamp(44px, 11vw, 56px);
 
       border: 2px solid #ccc;
       display: flex;
@@ -79,8 +81,9 @@
       justify-content: center;
 
       font-weight: bold;
-      font-size: clamp(16px, 4.5vw, 20px);
-
+      /* font-size: clamp(16px, 4.5vw, 20px); */
+      font-size: clamp(18px, 5vw, 24px);
+      
       color: #111;
       background: white;
     }
@@ -91,6 +94,8 @@
       flex-direction: column;
       gap: 6px;
       margin-top: 10px;
+      transform: scale(1.05);
+      transform-origin: center;
     }
 
     .keyrow {
@@ -100,9 +105,12 @@
     }
 
     .key {
-      padding: 10px;
-      min-width: 30px;
+      /* padding: 10px; */
+      /* min-width: 30px; */
 
+      padding: 14px;
+      min-width: 38px;
+      
       border: none;
       background: #ddd;
       cursor: pointer;
@@ -116,7 +124,8 @@
     }
 
     .wide {
-      min-width: 60px;
+      /* min-width: 60px; */
+      min-width: 78px;
     }
 
   </style>
