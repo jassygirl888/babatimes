@@ -3,7 +3,7 @@
 
 <head>
   <title>Baba Times</title>
-
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -76,37 +76,36 @@
     }
 
     .wordle {
-      background: #bdbdbd;
+      background: #d3d6db;
     }
 
     .connections {
-      background: #cdb4db;
+      background: #b0a7f8;
     }
 
     .strands {
-      background: #c9ddff;
+      background: #b1ded7;
     }
 
-    .game-title {
-
-      font-family:
-        "Franklin Gothic Medium",
-        "Franklin Gothic",
-        sans-serif;
+      .game-title {
+        font-family: "Roboto Slab", serif;
+        font-size: clamp(26px, 6vw, 34px);
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 8px;
+      }
 
       font-size: clamp(26px, 6vw, 34px);
-
       font-weight: bold;
-
       color: #111;
-
       margin-bottom: 8px;
     }
 
     .game-desc {
 
       font-family:
-        Arial,
+        "Franklin Gothic Medium",
+        "Franklin Gothic",
         sans-serif;
 
       font-size: clamp(11px, 3vw, 13px);
@@ -118,12 +117,12 @@
       line-height: 1.35;
     }
 
-    .game-date {
-
-      font-family:
-        "Franklin Gothic Medium",
-        "Franklin Gothic",
-        sans-serif;
+      .game-date {
+        font-family: "Roboto Slab", serif;
+        font-size: clamp(13px, 3vw, 15px);
+        font-weight: 700;
+        color: #111;
+      }
 
       font-size: clamp(13px, 3vw, 15px);
 
@@ -131,20 +130,25 @@
 
       color: #111;
 
-      margin-bottom: 4px;
+      /* margin-bottom: 4px; */
     }
 
     .game-editor {
 
-      font-family:
-        Arial,
+      font-family: 
+        "Franklin Gothic Medium",
+        "Franklin Gothic",
         sans-serif;
-
       font-size: clamp(10px, 2.6vw, 11px);
-
       color: #777;
+      text-align: right;
     }
 
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
   </style>
 </head>
 
@@ -152,7 +156,7 @@
 
   <div class="menu">
 
-    <h1>Baba Time</h1>
+    <h1>Baba Times</h1>
 
     <button
       class="game-btn wordle"
@@ -184,12 +188,16 @@
         Find the hidden groups between the words.
       </div>
 
-      <div class="game-date">
-        May 29, 2026
-      </div>
-
-      <div class="game-editor">
-        Edited by Jasmine Chua
+      <div class="meta-row">
+      
+        <div class="game-date">
+          May 29, 2026
+        </div>
+      
+        <div class="game-editor">
+          Edited by Jasmine Chua
+        </div>
+      
       </div>
 
     </button>
