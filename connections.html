@@ -36,6 +36,7 @@
       align-items: center;
     }
 
+    /* ACTIVE GRID */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -48,22 +49,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
+
       border: 2px solid #ccc;
       border-radius: 12px;
       background: white;
       cursor: pointer;
+
       font-size: 11px;
       font-weight: bold;
       text-align: center;
       line-height: 1.1;
+
       padding: 6px;
       box-sizing: border-box;
+
       word-break: break-word;
       overflow-wrap: break-word;
-      transition: background 0.15s, border-color 0.15s;
-
-      user-select: none;
-      pointer-events: auto;
     }
 
     .tile.selected {
@@ -71,6 +72,7 @@
       border-color: #999;
     }
 
+    /* SOLVED SECTION — NYT style: one wide rectangle per category */
     #solved {
       display: flex;
       flex-direction: column;
@@ -104,76 +106,18 @@
       color: #1a1a1a;
     }
 
-    #mistakes-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
-    #mistakes-label {
-      font-size: 13px;
-      color: #555;
-    }
-
-    #mistakes-dots {
-      display: flex;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #333;
-      transition: background 0.3s, transform 0.3s;
-    }
-
-    .dot.lost {
-      background: #ccc;
-      transform: scale(0.85);
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
     button {
       padding: 10px 16px;
-      border: 2px solid #333;
-      border-radius: 20px;
-      background: white;
-      color: #333;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-    }
-
-    button:hover {
-      background: #f0f0f0;
-    }
-
-    button.primary {
+      border: none;
+      border-radius: 6px;
       background: #333;
       color: white;
-    }
-
-    button.primary:hover {
-      background: #555;
-    }
-
-    button:disabled {
-      opacity: 0.4;
-      cursor: default;
+      cursor: pointer;
     }
 
     #status {
       font-weight: bold;
       height: 20px;
-      font-size: 14px;
     }
   </style>
 </head>
@@ -185,158 +129,85 @@
 <h2>Connections</h2>
 
 <div id="game">
+
   <div id="solved"></div>
 
   <div class="grid" id="grid"></div>
 
-  <div id="mistakes-area">
-    <div id="mistakes-label">Mistakes remaining:</div>
-
-    <div id="mistakes-dots">
-      <div class="dot" id="dot-0"></div>
-      <div class="dot" id="dot-1"></div>
-      <div class="dot" id="dot-2"></div>
-      <div class="dot" id="dot-3"></div>
-    </div>
-  </div>
-
-  <div class="btn-row">
-    <button onclick="shuffleGrid()">Shuffle</button>
-    <button onclick="deselectAll()">Deselect All</button>
-    <button class="primary" onclick="submitGroup()">Submit</button>
-  </div>
+  <button onclick="submitGroup()">Submit</button>
 
   <p id="status"></p>
+
 </div>
 
 <script>
 
 const groups = [
-  {
-    name: "FIRST DATE ORDERS",
-    words: ["PIZZA","PISTACHIO","MOZZARELLA BALLS","RAVIOLI"]
-  },
-  {
-    name: "DATING SPOTS",
-    words: ["AMANO","KODAWARI","MINANTE","TALES AND FEELINGS"]
-  },
-  {
-    name: "JUST NOT OUR GOVERNMENT NAMES",
-    words: ["BABA","LOVEY","LANGLING","BABY"]
-  },
-  {
-    name: "FIRST TREATS",
-    words: ["FRIES & MCFLURRY","COCO MILKTEA","STARBS","COOKIES"]
-  }
+  { name: "FIRST DATE ORDERS", words: ["PIZZA","PISTACHIO","MOZZARELLA BALLS","RAVIOLI"] },
+  { name: "DATING SPOTS", words: ["AMANO","KODAWARI","MINANTE","TALES AND FEELINGS"] },
+  { name: "JUST NOT OUR GOVERNMENT NAMES", words: ["BABA","LOVEY","LANGLING","BABY"] },
+  { name: "FIRST TREATS", words: ["FRIES & MCFLURRY","COCO MILKTEA","STARBS","COOKIES"] }
 ];
 
-const colors = ["#f9df6d", "#6aaa64", "#a0c4ff", "#cdb4db"];
+const colors = [
+  "#f9df6d", // yellow
+  "#6aaa64", // green
+  "#a0c4ff", // blue
+  "#cdb4db"  // purple
+];
 
-let allWords = groups
-  .flatMap(g => g.words)
+let allWords = groups.flatMap(g => g.words)
   .sort(() => Math.random() - 0.5);
 
 let selected = [];
 let solvedCount = 0;
-let mistakes = 0;
-
-const MAX_MISTAKES = 4;
 
 function renderGrid() {
-
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-
-  allWords.forEach(word => {
-
-    const tile = document.createElement("div");
-
-    tile.className = "tile";
-    tile.innerText = word;
-
-    // restore selected look
-    if (selected.includes(word)) {
-      tile.classList.add("selected");
-    }
-
-    // click selection
-    tile.onclick = function () {
-
-      // deselect
-      if (selected.includes(word)) {
-
-        selected = selected.filter(w => w !== word);
-        tile.classList.remove("selected");
-      }
-
-      // select
-      else if (selected.length < 4) {
-
-        selected.push(word);
-        tile.classList.add("selected");
-      }
-    };
-
-    grid.appendChild(tile);
-  });
+  document.getElementById("grid").innerHTML =
+    allWords.map(w =>
+      `<div class="tile" onclick="toggle(this,'${w}')">${w}</div>`
+    ).join("");
 }
 
-function deselectAll() {
+renderGrid();
 
-  selected = [];
-  renderGrid();
-}
-
-function shuffleGrid() {
-
-  deselectAll();
-
-  allWords = allWords.sort(() => Math.random() - 0.5);
-
-  renderGrid();
-}
-
-function updateDots() {
-
-  for (let i = 0; i < MAX_MISTAKES; i++) {
-
-    const dot = document.getElementById("dot-" + i);
-
-    if (i < mistakes) {
-      dot.classList.add("lost");
-    } else {
-      dot.classList.remove("lost");
-    }
+function toggle(el, word) {
+  if (selected.includes(word)) {
+    selected = selected.filter(x => x !== word);
+    el.classList.remove("selected");
+  } else if (selected.length < 4) {
+    selected.push(word);
+    el.classList.add("selected");
   }
 }
 
 function submitGroup() {
-
   if (selected.length !== 4) return;
 
-  const match = groups.find(g =>
+  let match = groups.find(g =>
     g.words.every(w => selected.includes(w))
   );
 
-  const almost = groups.find(g =>
-    g.words.filter(w => selected.includes(w)).length === 3
-  );
+  let almost = groups.find(g => {
+    let common = g.words.filter(w => selected.includes(w)).length;
+    return common === 3;
+  });
 
-  // CORRECT
   if (match) {
 
+    // Remove from active pool
     allWords = allWords.filter(w => !match.words.includes(w));
 
-    const row = document.createElement("div");
-
+    // Build NYT-style single wide rectangle
+    let row = document.createElement("div");
     row.className = "solved-row";
     row.style.background = colors[solvedCount];
 
-    const title = document.createElement("div");
+    let title = document.createElement("div");
     title.className = "group-title";
     title.innerText = match.name;
 
-    const words = document.createElement("div");
+    let words = document.createElement("div");
     words.className = "group-words";
     words.innerText = match.words.join(", ");
 
@@ -346,52 +217,21 @@ function submitGroup() {
     document.getElementById("solved").appendChild(row);
 
     solvedCount++;
+    renderGrid();
 
-    document.getElementById("status").innerText = "";
-
-    if (solvedCount === groups.length) {
-      document.getElementById("status").innerText =
-        "You got them all! 🎉";
-    }
-
-  }
-
-  // WRONG
-  else {
-
-    mistakes++;
-
-    updateDots();
-
-    if (almost) {
-      document.getElementById("status").innerText =
-        "OH! So close… One away 👀";
-    } else {
-      document.getElementById("status").innerText =
-        "Eh? Nope! ❌";
-    }
-
-    if (mistakes >= MAX_MISTAKES) {
-
-      document.getElementById("status").innerText =
-        "No more tries! 💔";
-
-      document.querySelectorAll(".tile").forEach(t => {
-
-        t.style.pointerEvents = "none";
-        t.style.opacity = "0.5";
-      });
-
-      document.querySelector("button.primary").disabled = true;
-    }
+  } else if (almost) {
+    document.getElementById("status").innerText =
+      "OH! So close… One away 👀";
+  } else {
+    document.getElementById("status").innerText =
+      "Eh? Nope! ❌";
   }
 
   selected = [];
-
-  renderGrid();
+  document.querySelectorAll(".tile").forEach(t =>
+    t.classList.remove("selected")
+  );
 }
-
-renderGrid();
 
 </script>
 
