@@ -4,13 +4,10 @@
   <title>Strands</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <style>
-  body {
-      font-family: 
-        "Franklin Gothic Medium",
-        "Franklin Gothic",
-        sans-serif;
+    body {
+      font-family: "Franklin Gothic Medium","Franklin Gothic",sans-serif;
       margin: 0;
       min-height: 100vh;
       display: flex;
@@ -26,43 +23,32 @@
       font-weight: 700;
       margin-bottom: 5px;
     }
-    
+
     .home {
       position: fixed;
       top: 20px;
-      bottom: auto;
       left: 20px;
-      transform: none;
-      /* bottom: 20px; */
-      /* left: 50%; */
-      /* transform: translateX(-50%); */
-      
-  
       padding: 10px 16px;
       border: 2px solid #333;
       border-radius: 20px;
       background: white;
       color: #333;
-    
       font-size: 13px;
       font-weight: bold;
-    
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-    
-      -webkit-tap-highlight-color: transparent;
     }
 
-    .home:hover {
-      background: #f0f0f0;
+    /* GRID WRAPPER FOR SVG */
+    .grid-wrap {
+      position: relative;
+      display: inline-block;
+      margin-top: 10px;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(6, 50px);
       gap: 6px;
-      justify-content: center;
-      margin-top: 10px;
     }
 
     .cell {
@@ -74,10 +60,33 @@
       justify-content: center;
       cursor: pointer;
       user-select: none;
+      font-weight: bold;
+      position: relative;
+      z-index: 2;
+      background: white;
     }
 
-    .selected {
+    .cell.selected {
       background: #ddd;
+    }
+
+    .cell.found {
+      background: #3d9cba;
+      color: white;
+    }
+
+    /* SVG LINES */
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    #current {
+      font-weight: bold;
+      margin-top: 10px;
     }
 
     button {
@@ -93,93 +102,153 @@
 </head>
 
 <body>
+
 <button class="home" onclick="location.href='index.html'">&lt;</button>
-<div>
-  <h1>Strands</h1>
-  <p>Theme: Moments of Us 💛</p>
 
+<h1>Strands</h1>
+<p>WHERE WE STARTED EATING</p>
+
+<div class="grid-wrap">
+  <svg id="lines"></svg>
   <div class="grid" id="grid"></div>
-
-  <p>Current: <span id="current"></span></p>
-
-  <button onclick="submitWord()">Submit</button>
-
-  <p id="status"></p>
-
-  <p id="spangram" style="display:none; font-weight:bold;">
-    🌟 Spangram: SEASON ONE 💛
-  </p>
 </div>
+
+<p id="current"></p>
+
+<button onclick="submitWord()">Submit</button>
 
 <script>
 
-const words = ["PHOTOBOOTH","PIZZA","CALLS","COFFEE","SUSHI","JESSY","TICKETS"];
+const themeWords = [
+  "AMANO",
+  "MINANTE",
+  "TALESANDFEELINGS",
+  "BELLAMADEUS",
+  "BURNTBEAN"
+];
+const spangram = "WHEREWESTARTEDEATING";
+  
+const size = 6;
 
-let pool = words.join("").split("");
-pool.sort(() => Math.random() - 0.5);
+let letters = themeWords.join("").split("").sort(() => Math.random() - 0.5);
 
-let grid = [];
-let current = "";
-let found = [];
+let grid = letters.map((letter, i) => ({
+  letter,
+  row: Math.floor(i / size),
+  col: i % size,
+  found: false
+}));
+
 let selected = [];
+let found = [];
 
-let size = 6;
+const gridEl = document.getElementById("grid");
+const svg = document.getElementById("lines");
 
-pool.forEach((l, i) => {
-  grid.push({
-    letter: l,
-    row: Math.floor(i / size),
-    col: i % size
+function render() {
+
+  gridEl.innerHTML = "";
+
+  grid.forEach((c, i) => {
+
+    const div = document.createElement("div");
+    div.className = "cell";
+    div.innerText = c.letter;
+
+    if (selected.includes(i)) div.classList.add("selected");
+    if (c.found) div.classList.add("found");
+
+    div.onclick = () => pick(i);
+
+    gridEl.appendChild(div);
   });
-});
 
-document.getElementById("grid").innerHTML =
-  grid.map((c, i) =>
-    `<div class="cell" onclick="pick(${i})">${c.letter}</div>`
-  ).join("");
+  drawLines();
+}
 
 function pick(i) {
-  let cell = grid[i];
 
-  if (selected.length === 0) {
-    selected.push(i);
-  } else {
-    let last = grid[selected[selected.length - 1]];
+  if (selected.includes(i)) return;
 
-    let adjacent =
-      Math.abs(last.row - cell.row) <= 1 &&
-      Math.abs(last.col - cell.col) <= 1;
+  const cell = grid[i];
 
-    if (!adjacent) return;
-    selected.push(i);
+  if (selected.length > 0) {
+
+    const last = grid[selected[selected.length - 1]];
+
+    const dr = Math.abs(last.row - cell.row);
+    const dc = Math.abs(last.col - cell.col);
+
+    const isAdjacent = dr <= 1 && dc <= 1;
+
+    if (!isAdjacent) return;
   }
 
-  document.querySelectorAll(".cell")[i].classList.add("selected");
+  selected.push(i);
 
-  current = selected.map(x => grid[x].letter).join("");
-  document.getElementById("current").innerText = current;
+  document.getElementById("current").innerText =
+    selected.map(x => grid[x].letter).join("");
+
+  render();
+}
+
+function drawLines() {
+
+  const cells = document.querySelectorAll(".cell");
+  const wrap = document.querySelector(".grid-wrap");
+
+  const rect = wrap.getBoundingClientRect();
+
+  svg.setAttribute("width", rect.width);
+  svg.setAttribute("height", rect.height);
+  svg.innerHTML = "";
+
+  for (let i = 0; i < selected.length - 1; i++) {
+
+    const a = cells[selected[i]].getBoundingClientRect();
+    const b = cells[selected[i + 1]].getBoundingClientRect();
+
+    const x1 = a.left - rect.left + 25;
+    const y1 = a.top - rect.top + 25;
+    const x2 = b.left - rect.left + 25;
+    const y2 = b.top - rect.top + 25;
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke", "#666");
+    line.setAttribute("stroke-width", "3");
+    line.setAttribute("stroke-linecap", "round");
+
+    svg.appendChild(line);
+  }
 }
 
 function submitWord() {
-  if (words.includes(current) && !found.includes(current)) {
-    found.push(current);
-    document.getElementById("status").innerText = "Found 💛";
-  } else {
-    document.getElementById("status").innerText = "Try again 💭";
+
+  const word = selected.map(i => grid[i].letter).join("");
+
+  // theme word match
+  if (themeWords.includes(word) && !found.includes(word)) {
+
+    found.push(word);
+    selected.forEach(i => grid[i].found = true);
   }
 
-  current = "";
-  document.getElementById("current").innerText = "";
+  // 🌟 SPANGRAM CHECK
+  else if (word === spangram) {
 
-  document.querySelectorAll(".cell").forEach(c =>
-    c.classList.remove("selected")
-  );
+    selected.forEach(i => grid[i].found = true);
+
+    document.getElementById("current").innerText =
+      "💛 Spangram found!";
+  }
 
   selected = [];
-
-  if (found.length === words.length) {
-    document.getElementById("spangram").style.display = "block";
-  }
+  render();
 }
 
 </script>
