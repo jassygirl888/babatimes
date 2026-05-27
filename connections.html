@@ -2,29 +2,75 @@
 <html>
 <head>
   <title>Connections</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+   
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --border: #ccc;
+    }
+
     body {
-      font-family: 
-        "Franklin Gothic Medium",
-        "Franklin Gothic",
-        sans-serif;
-      margin: 0;
+      font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+      background: #fafafa;
       min-height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #fafafa;
       flex-direction: column;
+      align-items: center;
+        padding: 0 12px 40px;
+      -webkit-tap-highlight-color: transparent;
+        overflow: hidden;
+        touch-action: none;
+        overscroll-behavior: none;
+        position: fixed;
+        width: 100%;
+      /* margin: 0; */
+      /* text-align: center; */
+    }
+
+    header {
+      width: 100%;
+      max-width: 560px;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+    
+      padding: 18px 0 12px;
+      margin-bottom: 8px;
+    
+      border-bottom: 1.5px solid #ccc;
+    }
+    
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a1410;
+      letter-spacing: -0.5px;
       text-align: center;
     }
 
-    h1 {
-      font-family: "Roboto Slab", serif;
-      font-weight: 700;
-      margin-bottom: 2px;
+        .back-btn {
+      padding: 6px 12px;
+      border: 2px solid #333;
+      border-radius: 20px;
+      background: white;
+      color: #333;
+    
+      font-size: 13px;
+      font-weight: bold;
+    
+      cursor: pointer;
+      font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    
+      white-space: nowrap;
+    }
+    
+    .back-btn:hover {
+      background: #f0f0f0;
     }
     
     .home {
@@ -37,7 +83,6 @@
       /* left: 50%; */
       /* transform: translateX(-50%); */
       
-    
       padding: 10px 16px;
       border: 2px solid #333;
       border-radius: 20px;
@@ -53,9 +98,13 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .home:hover {
-      background: #f0f0f0;
+    .subheader {
+      width: 100%;
+      max-width: 560px;
+      text-align: center;
+      padding: 8px 0 5px;
     }
+
 
     #game {
       display: flex;
@@ -211,9 +260,12 @@
 
 <body>
 
-<button class="home" onclick="location.href='index.html'">&lt;</button>
+<header>
+  <button class="back-btn" onclick="window.location.href='index.html'">&lt;</button>
+  <span class="brand">Wordle</span>
+  <span></span>
+</header>
 
-<h1>Connections</h1>
  <p id="status"></p>
 <div id="game">
   <div id="solved"></div>
