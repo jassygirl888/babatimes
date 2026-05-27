@@ -41,39 +41,47 @@
   }
 
   /* ── Header ── */
-  header {
-    width: 100%;
-    max-width: 560px;
-    display: grid;
-    grid-template-columns: 48px 1fr 48px;
-    align-items: center;
-    padding: 18px 0 12px;
-    margin-bottom: 4px;
-    border-bottom: 1.5px solid var(--border);
-  }
+    header {
+      width: 100%;
+      max-width: 560px;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+    
+      padding: 18px 0 12px;
+      margin-bottom: 8px;
+    
+      border-bottom: 1.5px solid #ccc;
+    }
 
-  .back-btn {
-    padding: 6px 12px;
-    border: 2px solid #333;
-    border-radius: 20px;
-    background: white;
-    color: #333;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
-    white-space: nowrap;
-  }
-  .back-btn:hover { background: #f0f0f0; }
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a1410;
+      letter-spacing: -0.5px;
+      text-align: center;
+    }
+    
+    .back-btn {
+      padding: 6px 12px;
+      border: 2px solid #333;
+      border-radius: 20px;
+      background: white;
+      color: #333;
+    
+      font-size: 13px;
+      font-weight: bold;
+    
+      cursor: pointer;
+      font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    
+      white-space: nowrap;
+    }
 
-  .brand {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    font-weight: 700;
-    color:  #1a1410;
-    letter-spacing: -0.5px;
-    text-align: center;
-  }
+    .back-btn:hover {
+      background: #f0f0f0;
+    }
 
   /* ── Subheader ── */
   .subheader {
