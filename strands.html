@@ -525,12 +525,61 @@ function getPoint(e) {
   };
 }
 
- wrap.addEventListener('mousedown', e => {isDragging = true;selected = [];handleMove(e);});
- wrap.addEventListener('touchstart', e => {e.preventDefault();isDragging = true; selected = [];handleMove(e);}, { passive: false });
- window.addEventListener('mousemove', handleMove);
- window.addEventListener('touchmove', e => {if (isDragging) {e.preventDefault();handleMove(e);}}, { passive: false });
- window.addEventListener('mouseup', () => {if (isDragging) {isDragging = false;submitWord();}});
- window.addEventListener('touchend', () => {if (isDragging) {isDragging = false;submitWord();}});
+let activePointer = null;
+
+wrap.addEventListener('pointerdown', (e) => {
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+
+  isDragging = true;
+  selected = [];
+  activePointer = e.pointerId;
+
+  cell.classList.add('selected');
+  selected.push(Number(cell.dataset.index));
+
+  wrap.setPointerCapture(e.pointerId);
+  render();
+});
+
+wrap.addEventListener('pointermove', (e) => {
+  if (!isDragging || e.pointerId !== activePointer) return;
+
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+
+  const i = Number(cell.dataset.index);
+  const last = selected[selected.length - 1];
+
+  if (i === last) return;
+
+  const cellData = flatGrid[i];
+  if (!cellData || foundWords.has(cellData.wordName)) return;
+
+  if (selected.includes(i)) {
+    if (selected[selected.length - 2] === i) {
+      selected.pop();
+      render();
+    }
+    return;
+  }
+
+  if (selected.length > 0 && !isAdjacent(last, i)) return;
+
+  selected.push(i);
+  render();
+});
+
+wrap.addEventListener('pointerup', () => {
+  if (!isDragging) return;
+  isDragging = false;
+  submitWord();
+});
+
+wrap.addEventListener('pointercancel', () => {
+  isDragging = false;
+  submitWord();
+});
 
 function handleMove(e) {
   if (!isDragging) return;
