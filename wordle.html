@@ -2,13 +2,18 @@
 <html>
 <head>
   <title>Wordle</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <title>Guess the word</title>
+  
   <!-- SAME TITLE FONT STYLE AS BABA TIMES -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --border: #ccc;
+    }
 
     body {
       font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
@@ -220,24 +225,20 @@
       flex: 1.5;
       min-width: 52px;
     }
-
-    :root {
-    --border: #ccc;
-    }
   </style>
 </head>
 
 <body>
 
 <header>
-  <button class="back-btn" onclick="location.href='index.html'">&lt;</button>
+  <button class="back-btn" onclick="window.location.href='index.html'">&lt;</button>
   <span class="brand">Wordle</span>
   <span></span>
 </header>
 
 <div class="subheader">
-  <div class="clue">Guess the word</div>
-</div>  
+  <div class="clue">Guess the Word</div>
+</div>
   
 <div id="board"></div>
 
