@@ -409,6 +409,57 @@ const svgEl = document.getElementById('linesSvg');
 const currentWrap = document.getElementById('currentWrap');
 const hintBtn = document.getElementById('hintBtn');
 
+// CLEAN TAP-TO-SELECT SYSTEM
+
+gridEl.addEventListener('click', (e) => {
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+
+  const i = Number(cell.dataset.index);
+  const data = flatGrid[i];
+
+  // ignore empty / already found letters
+  if (!data || foundWords.has(data.wordName)) return;
+
+  // first tap starts selection
+  if (selected.length === 0) {
+    selected.push(i);
+    render();
+    return;
+  }
+
+  const last = selected[selected.length - 1];
+
+  // prevent double tap
+  if (i === last) return;
+
+  // BACKTRACK (tap previous cell to undo last move)
+  if (selected.length >= 2 && selected[selected.length - 2] === i) {
+    selected.pop();
+    render();
+    return;
+  }
+
+  // must be adjacent
+  if (!isAdjacent(last, i)) return;
+
+  selected.push(i);
+  render();
+});
+
+// ===============================
+// OPTIONAL: improve mobile feel
+// prevents accidental text selection
+// ===============================
+  
+// gridEl.addEventListener('touchstart', (e) => {
+//   e.preventDefault();
+// }, { passive: false });
+
+gridEl.addEventListener('touchstart', () => {}, { passive: true });
+gridEl.style.touchAction = "manipulation";
+  
+
 // Dynamic cell size based on viewport
 function getCellSize() {
   const vw = window.innerWidth;
@@ -480,97 +531,11 @@ function drawLines() {
     svgEl.appendChild(line);
   }
 }
-
-// function cellFromPoint(x, y) {
-//   const el = document.elementFromPoint(x, y);
-//   if (!el || !el.classList.contains('cell')) return null;
-//   return Number(el.dataset.index);
-// }
-
-function cellFromPoint(x, y) {
-  const cells = [...document.querySelectorAll('.cell')];
-
-  for (const cell of cells) {
-    const rect = cell.getBoundingClientRect();
-
-    if (
-      x >= rect.left &&
-      x <= rect.right &&
-      y >= rect.top &&
-      y <= rect.bottom
-    ) {
-      return Number(cell.dataset.index);
-    }
-  }
-
-  return null;
-}
  
 function isAdjacent(a, b) {
   return Math.abs(Math.floor(a/COLS) - Math.floor(b/COLS)) <= 1 &&
          Math.abs((a%COLS) - (b%COLS)) <= 1;
 }
-
-function getPoint(e) {
-  if (e.touches && e.touches.length > 0) {
-    return {
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY
-    };
-  }
-
-  return {
-    x: e.clientX,
-    y: e.clientY
-  };
-}
-
- wrap.addEventListener('mousedown', e => {isDragging = true;selected = [];handleMove(e);});
- wrap.addEventListener('touchstart', e => {e.preventDefault();isDragging = true; selected = [];handleMove(e);}, { passive: false });
- window.addEventListener('mousemove', handleMove);
- window.addEventListener('touchmove', e => {if (isDragging) {e.preventDefault();handleMove(e);}}, { passive: false });
- window.addEventListener('mouseup', () => {if (isDragging) {isDragging = false;submitWord();}});
- window.addEventListener('touchend', () => {if (isDragging) {isDragging = false;submitWord();}});
-
-function handleMove(e) {
-  if (!isDragging) return;
-
-  const { x, y } = getPoint(e);
-  const i = cellFromPoint(x, y);
-
-  if (i === null) return;
-
-  const cell = flatGrid[i];
-
-  if (!cell || foundWords.has(cell.wordName)) return;
-
-  // prevent duplicate selections
-  if (selected[selected.length - 1] === i) return;
-
-  // allow backtracking
-  if (selected.includes(i)) {
-    if (
-      selected.length >= 2 &&
-      selected[selected.length - 2] === i
-    ) {
-      selected.pop();
-      render();
-    }
-    return;
-  }
-
-  // only adjacent cells
-  if (
-    selected.length > 0 &&
-    !isAdjacent(selected[selected.length - 1], i)
-  ) {
-    return;
-  }
-
-  selected.push(i);
-  render();
-}
-
 
 function submitWord() {
   if (selected.length < 3) { selected = []; render(); return; }
