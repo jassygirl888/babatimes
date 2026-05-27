@@ -371,7 +371,20 @@
   <div class="win-title">Happy Anniversary!</div>
   <div class="win-sub">One year of first bites, last sips, and everything in between. Here's to a lifetime more. ♥</div>
   <div class="win-words" id="winWords"></div>
-  <button class="win-play-again" onclick="resetGame()">Play Again</button>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+  <button class="win-play-again" onclick="window.location.href='index.html'">
+    Home
+  </button>
+
+  <button class="win-play-again" onclick="admirePuzzle()">
+    Admire Puzzle
+  </button>
+
+  <button class="win-play-again" onclick="resetGame()">
+    Play Again
+  </button>
+</div>
 </div>
 
 <script>
@@ -413,6 +426,7 @@ WORDS.forEach(w => {
 
 let selected = [], foundWords = new Set(), hintsUsed = 0, isDragging = false, hintedCells = new Set();
 const MAX_HINTS = 3;
+let admireMode = false;
 
 const gridEl = document.getElementById('grid');
 const wrap = document.getElementById('wrap');
@@ -422,6 +436,8 @@ const hintBtn = document.getElementById('hintBtn');
 
 // CLEAN TAP-TO-SELECT SYSTEM
 gridEl.addEventListener('click', (e) => {
+  if (admireMode) return;
+  
   const cell = e.target.closest('.cell');
   if (!cell) return;
 
@@ -562,6 +578,9 @@ function submitWord() {
     const selectedSet = new Set(selected);
     if ([...selectedSet].every(i => correctSet.has(i)) && selectedSet.size === correctSet.size) {
       foundWords.add(match.name);
+      if (match.type === 'spangram') {
+      showToast('YEY BABA SPANGRAM!'); 
+      }
       hintedCells = new Set([...hintedCells].filter(i => flatGrid[i]?.wordName !== match.name));
       selected = [];
       render();
