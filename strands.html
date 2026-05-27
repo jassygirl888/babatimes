@@ -590,7 +590,7 @@ function getPoint(e) {
   renderCurrent();
 }
 
-  // only adjacent cells
+  // adjacency check
   if (
     selected.length > 0 &&
     !isAdjacent(selected[selected.length - 1], i)
@@ -599,8 +599,16 @@ function getPoint(e) {
   }
 
   selected.push(i);
-  render();
-}
+
+  const el = document.querySelector(
+    `.cell[data-index="${i}"]`
+  );
+
+  el?.classList.add('selected');
+
+  drawLines();
+  renderCurrent();
+} 
 
 
 function submitWord() {
@@ -640,16 +648,27 @@ function showToast(msg) {
 
 function useHint() {
   if (hintsUsed >= MAX_HINTS) return;
+
   const unfound = WORDS.filter(w => !foundWords.has(w.name));
   if (!unfound.length) return;
+
+  // pick a random word
   const word = unfound[Math.floor(Math.random() * unfound.length)];
-  const wordCells = word.path.map(([r,c]) => idx(r,c));
-  const unhinted = wordCells.filter(i => !hintedCells.has(i));
-  if (!unhinted.length) return;
-  hintedCells.add(unhinted[Math.floor(Math.random() * unhinted.length)]);
+
+  // FIRST LETTER ONLY (index 0 of path)
+  const firstCell = word.path[0];
+  const firstIndex = idx(firstCell[0], firstCell[1]);
+
+  // already hinted? pick another word next time
+  if (hintedCells.has(firstIndex)) return;
+
+  hintedCells.add(firstIndex);
+
   hintsUsed++;
   document.getElementById(`hd${hintsUsed - 1}`).classList.add('used');
+
   if (hintsUsed >= MAX_HINTS) hintBtn.disabled = true;
+
   render();
   showToast('Hint revealed!');
 }
