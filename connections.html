@@ -53,13 +53,13 @@
       text-align: center;
     }
 
-        .back-btn {
+    .back-btn {
       padding: 6px 12px;
       border: 2px solid #333;
       border-radius: 20px;
       background: white;
       color: #333;
-    
+  
       font-size: 13px;
       font-weight: bold;
     
@@ -255,6 +255,54 @@
       cursor: default;
     }
 
+   .win-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(250,250,250,0.97);
+    z-index: 200;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+  }
+  
+  .win-overlay.show {
+    display: flex;
+  }
+  
+  .win-emoji {
+    font-size: 52px;
+    margin-bottom: 14px;
+  }
+  
+  .win-title {
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1410;
+    margin-bottom: 8px;
+  }
+  
+  .win-sub {
+    font-size: 14px;
+    color: #555;
+    max-width: 300px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+  
+  .win-play-again {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 24px;
+    background: #333;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  } 
   </style>
 </head>
 
@@ -326,7 +374,7 @@ let mistakes = 0;
 const MAX_MISTAKES = 4;
 
 function renderGrid() {
-
+  
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
@@ -344,6 +392,7 @@ function renderGrid() {
 
     // click selection
     tile.onclick = function () {
+      if (admire) return;
 
       // deselect
       if (selected.includes(word)) {
@@ -436,6 +485,10 @@ function submitGroup() {
     if (solvedCount === groups.length) {
       document.getElementById("status").innerText =
         "You got them all! 🎉";
+    
+      setTimeout(() => {
+        document.getElementById("winOverlay").classList.add("show");
+      }, 500);
     }
 
   }
@@ -460,12 +513,6 @@ function submitGroup() {
       document.getElementById("status").innerText =
         "No more tries! 💔";
 
-      document.querySelectorAll(".tile").forEach(t => {
-
-        t.style.pointerEvents = "none";
-        t.style.opacity = "0.5";
-      });
-
       document.querySelector("button.primary").disabled = true;
     }
   }
@@ -477,7 +524,61 @@ function submitGroup() {
 
 renderGrid();
 
+
+let admire = false;
+
+function admireMode() {
+  admire = true;
+  document.getElementById("winOverlay").classList.remove("show");
+
+  document.getElementById("status").innerText = "Admiring puzzle ✨";
+
+  // disable interactions
+  document.querySelectorAll(".tile").forEach(t => {
+    t.style.pointerEvents = "none";
+    t.style.opacity = "0.7";
+  });
+} 
+
+function resetGame() {
+  admire = false;
+  selected = [];
+  solvedCount = 0;
+  mistakes = 0;
+
+  allWords = groups
+    .flatMap(g => g.words)
+    .sort(() => Math.random() - 0.5);
+
+  document.getElementById("solved").innerHTML = "";
+  document.getElementById("status").innerText = "";
+
+  document.querySelectorAll(".tile").forEach(t => {
+    t.style.pointerEvents = "auto";
+    t.style.opacity = "1";
+  });
+
+  document.querySelectorAll(".dot").forEach(dot => {
+    dot.classList.remove("lost");
+  });
+
+  renderGrid();
+}
 </script>
 
+<!-- WIN OVERLAY -->
+<div class="win-overlay" id="winOverlay">
+  <div class="win-emoji">🎉</div>
+  <div class="win-title">You solved it!</div>
+  <div class="win-sub">Nice one. Clean solve 💫</div>
+
+  <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+    <button class="win-play-again" onclick="admireMode()">Admire Puzzle</button>
+    <button class="win-play-again" onclick="resetGame()">Play Again</button>
+    <button class="win-play-again" onclick="location.href='index.html'">Home</button>
+  </div>
+</div>
+  
+  
 </body>
 </html>
