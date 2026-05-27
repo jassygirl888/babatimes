@@ -30,15 +30,17 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-   header {
+    header {
       width: 100%;
       max-width: 560px;
       display: grid;
       grid-template-columns: 48px 1fr 48px;
       align-items: center;
+    
       padding: 18px 0 12px;
-      border-bottom: 1.5px solid var(--border);
-      margin-bottom: 4px;
+      margin-bottom: 8px;
+    
+      border-bottom: 1.5px solid #ccc;
     }
     
     .brand {
@@ -51,18 +53,24 @@
     }
 
     .back-btn {
-    padding: 6px 12px;
-    border: 2px solid #333;
-    border-radius: 20px;
-    background: white;
-    color: #333;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
-    white-space: nowrap;
+      padding: 6px 12px;
+      border: 2px solid #333;
+      border-radius: 20px;
+      background: white;
+      color: #333;
+    
+      font-size: 13px;
+      font-weight: bold;
+    
+      cursor: pointer;
+      font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    
+      white-space: nowrap;
     }
-    back-btn:hover { background: #f0f0f0; }
+    
+    .back-btn:hover {
+      background: #f0f0f0;
+    }
     
     .home {
       position: fixed;
