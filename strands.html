@@ -419,28 +419,37 @@ gridEl.addEventListener('click', (e) => {
 
   if (!data || foundWords.has(data.wordName)) return;
 
-  // first tap starts selection
+  const last = selected.length ? selected[selected.length - 1] : null;
+
+  // FIRST TAP
   if (selected.length === 0) {
     selected.push(i);
     render();
     return;
   }
 
-  const last = selected[selected.length - 1];
-
-  // prevent double tap
-  if (i === last) return;
-
-  // backtrack
+  // BACKTRACK
   if (selected.length >= 2 && selected[selected.length - 2] === i) {
     selected.pop();
     render();
     return;
   }
 
-  // must be adjacent
-  if (!isAdjacent(last, i)) return;
+  // SAME CELL → submit
+  if (i === last) {
+    submitWord();
+    return;
+  }
 
+  // INVALID MOVE (guard last)
+  if (last === null || !isAdjacent(last, i)) {
+    submitWord();
+    selected = [];
+    render();
+    return;
+  }
+
+  // VALID EXTENSION
   selected.push(i);
   render();
 });
@@ -451,9 +460,6 @@ gridEl.addEventListener('click', (e) => {
 // prevents accidental text selection
 // ===============================
   
-// gridEl.addEventListener('touchstart', (e) => {
-//   e.preventDefault();
-// }, { passive: false });
 
 gridEl.addEventListener('touchstart', () => {}, { passive: true });
 gridEl.style.touchAction = "manipulation";
