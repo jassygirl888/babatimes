@@ -323,72 +323,25 @@ const ROWS = 6;
 const COLS = 8;
 
 const WORDS = [
-
-{
-  name:'TABLEFORTWO',
-  type:'spangram',
-  path:[
-    [0,0],[0,1],[0,2],[0,3],[1,3],[1,4],
-    [1,5],[2,5],[2,6],[2,7],[3,7]
-  ]
-},
-
-{
-  name:'SEASALT',
-  type:'theme',
-  path:[
-    [1,0],[1,1],[1,2],[2,2],[2,3],[2,4],[3,4]
-  ]
-},
-
-{
-  name:'AMANO',
-  type:'theme',
-  path:[
-    [3,0],[3,1],[3,2],[4,2],[4,3]
-  ]
-},
-
-{
-  name:'MINANTE',
-  type:'theme',
-  path:[
-    [5,0],[5,1],[5,2],[5,3],[4,4],[4,5],[4,6]
-  ]
-},
-
-{
-  name:'TIONGBAHRU',
-  type:'theme',
-  path:[
-    [0,7],[1,7],[1,6],[2,6],[3,6],
-    [3,5],[3,4],[4,4],[5,4],[5,5]
-  ]
-},
-
-{
-  name:'KODAWARI',
-  type:'theme',
-  path:[
-    [0,5],[0,6],[1,5],[2,5],
-    [3,5],[4,5],[5,6],[5,7]
-  ]
-}
-
+  { name: 'TABLEFORTWO', displayName: 'Table for Two', type: 'spangram',
+    path: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[5,1],[5,2],[5,3],[5,4],[5,5]] },
+  { name: 'SEASALT', displayName: 'Sea Salt', type: 'theme',
+    path: [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7]] },
+  { name: 'AMANO', displayName: 'Amano', type: 'theme',
+    path: [[1,1],[1,2],[1,3],[1,4],[1,5]] },
+  { name: 'MINANTE', displayName: 'Minante', type: 'theme',
+    path: [[2,1],[2,2],[2,3],[2,4],[2,5],[2,6],[3,6]] },
+  { name: 'TIONGBAHRU', displayName: 'Tiong Bahru', type: 'theme',
+    path: [[1,6],[1,7],[2,7],[3,7],[4,7],[5,7],[5,6],[4,6],[4,5],[4,4]] },
+  { name: 'KODAWARI', displayName: 'Kodawari', type: 'theme',
+    path: [[3,5],[3,4],[3,3],[3,2],[3,1],[4,1],[4,2],[4,3]] }
 ];
 
-const gridData = Array(ROWS * COLS).fill(null);
-
-function idx(r,c){
-  return r * COLS + c;
-}
-
-WORDS.forEach(w=>{
-  w.path.forEach(([r,c],i)=>{
-    gridData[idx(r,c)] = {
-      letter:w.name[i],
-      word:w.name
-    };
+const flatGrid = Array(ROWS * COLS).fill(null);
+function idx(r, c) { return r * COLS + c; }
+WORDS.forEach(w => {
+  w.path.forEach(([r, c], i) => {
+    flatGrid[idx(r, c)] = { letter: w.name[i], wordName: w.name };
   });
 });
 
