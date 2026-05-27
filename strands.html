@@ -414,6 +414,12 @@ const hintBtn = document.getElementById('hintBtn');
 gridEl.addEventListener('click', (e) => {
   const cell = e.target.closest('.cell');
   if (!cell) return;
+  
+  if (!isAdjacent(last, i)) {
+  submitWord();
+  selected = [];
+  return;
+}
 }
 
   const i = Number(cell.dataset.index);
