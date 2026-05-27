@@ -180,6 +180,7 @@
     justify-content: center;
     gap: 3px;
     margin: 4px 0;
+   
   }
 
   .current-letter {
@@ -205,6 +206,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 6px 0 0;
+    margin-top: 10px;
   }
 
   .hint-btn {
@@ -321,17 +323,12 @@
   }
 
   
-  @media (max-width: 480px) {
-    .hint-btn {
-    color: var(--found-blue);
-  }
-}
 </style>
 </head>
 <body>
 
 <header>
-  <button class="back-btn" onclick="history.back()">&lt;</button>
+  <button class="back-btn" onclick="window.location.href='index.html'">&lt;</button>
   <span class="brand">Strands</span>
   <span></span>
 </header>
@@ -340,13 +337,12 @@
   <div class="clue">First Bites!</div>
 </div>
 
-
+<div class="current-wrap" id="currentWrap"></div>
+ 
 <div class="grid-wrap" id="wrap">
   <svg class="lines" id="linesSvg"></svg>
   <div class="grid" id="grid"></div>
 </div>
-
-<div class="current-wrap" id="currentWrap"></div>
 
 <div class="bottom-bar">
   <button class="hint-btn" id="hintBtn" onclick="useHint()">
@@ -493,12 +489,13 @@ function getPoint(e) {
                    : { x: e.clientX, y: e.clientY };
 }
 
-wrap.addEventListener('mousedown', e => { isDragging = true; selected = []; handleMove(e); });
-wrap.addEventListener('touchstart', e => { e.preventDefault(); isDragging = true; selected = []; handleMove(e); }, { passive: false });
-window.addEventListener('mousemove', handleMove);
-wrap.addEventListener('touchmove', e => { e.preventDefault(); handleMove(e); }, { passive: false });
-window.addEventListener('mouseup',  () => { if (isDragging) { isDragging = false; submitWord(); } });
-window.addEventListener('touchend', () => { if (isDragging) { isDragging = false; submitWord(); } });
+ wrap.addEventListener('mousedown', e => {isDragging = true;selected = [];handleMove(e);});
+ wrap.addEventListener('touchstart', e => {isDragging = true;selected = [];handleMove(e);}, { passive: true });
+ window.addEventListener('mousemove', handleMove);
+ window.addEventListener('touchmove', handleMove, { passive: true });
+ window.addEventListener('mouseup', () => {if (isDragging) {isDragging = false;submitWord();}});
+ window.addEventListener('touchend', () => {if (isDragging) {isDragging = false;submitWord();}});
+
 
 function handleMove(e) {
   if (!isDragging) return;
