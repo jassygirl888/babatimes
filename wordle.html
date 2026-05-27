@@ -11,31 +11,52 @@
   <style>
 
     body {
-      font-family:
-        "Franklin Gothic Medium",
-        "Franklin Gothic",
-        sans-serif;
-
-      height: 100vh;
+      font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+    
       margin: 0;
       background: #fafafa;
       text-align: center;
-
+    
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* TITLE (same as Baba Times) */
-    h1 {
-      font-family: "Roboto Slab", serif;
-      font-weight: 700;
-      margin-bottom: 5px;
-      /* font-size: clamp(28px, 7vw, 44px); */
+   header {
+      width: 100%;
+      max-width: 560px;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      padding: 18px 0 12px;
+      border-bottom: 1.5px solid #ccc;
+      margin-bottom: 10px;
     }
-
+    
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #1a1410;
+      letter-spacing: -0.5px;
+      text-align: center;
+    }
+    
+    .back-btn {
+      padding: 6px 12px;
+      border: 2px solid #333;
+      border-radius: 20px;
+      background: white;
+      color: #333;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: "Franklin Gothic Medium", sans-serif;
+    } 
+   
     .home {
       position: fixed;
       top: 20px;
@@ -59,6 +80,13 @@
       transition: background 0.15s, color 0.15s;
     
       -webkit-tap-highlight-color: transparent;
+    }
+
+    .subheader {
+      width: 100%;
+      max-width: 560px;
+      text-align: center;
+      padding: 8px 0 2px;
     }
 
     #board {
@@ -198,8 +226,16 @@
 
 <button class="home" onclick="location.href='index.html'">&lt;</button>
 
-<h1>Wordle</h1>
+<header>
+  <button class="back-btn" onclick="location.href='index.html'">&lt;</button>
+  <span class="brand">Wordle</span>
+  <span></span>
+</header>
 
+<div class="subheader">
+  <div class="clue">Guess the word</div>
+</div>  
+  
 <div id="board"></div>
 
 <p id="status"></p>
