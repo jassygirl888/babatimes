@@ -575,7 +575,7 @@ function submitWord() {
     cells[i]?.classList.add('shake');
     setTimeout(() => cells[i]?.classList.remove('shake'), 400);
   });
-  showToast(word.length < 4 ? 'Too short!' : 'Not a word here!');
+  showToast(word.length < 4 ? 'Too short!' : 'Not in the word list!');
   setTimeout(() => { selected = []; render(); }, 500);
 }
 
