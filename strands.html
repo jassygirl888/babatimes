@@ -131,17 +131,19 @@
     background: var(--surface);
     color: #1a1410;
     border: 1px solid var(--border);
-    transition: background .1s, transform .08s;
+    /* transition: background .1s, transform .08s; */
+    transition: background .05s linear; 
     position: relative;
     z-index: 2;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    will-change: transform, background;
   }
 
   .cell.selected {
     background: var(--selected-bg);
     border-color: #aaa;
-    transform: scale(1.06);
+    /* transform: scale(1.06); */
   }
 
   .cell.found-theme {
@@ -532,7 +534,7 @@ function getPoint(e) {
  window.addEventListener('mouseup', () => {if (isDragging) {isDragging = false;submitWord();}});
  window.addEventListener('touchend', () => {if (isDragging) {isDragging = false;submitWord();}});
 
-function handleMove(e) {
+ function handleMove(e) {
   if (!isDragging) return;
 
   const { x, y } = getPoint(e);
@@ -544,20 +546,49 @@ function handleMove(e) {
 
   if (!cell || foundWords.has(cell.wordName)) return;
 
-  // prevent duplicate selections
+  // prevent duplicate selection spam
   if (selected[selected.length - 1] === i) return;
 
-  // allow backtracking
+  // backtrack support
   if (selected.includes(i)) {
     if (
       selected.length >= 2 &&
       selected[selected.length - 2] === i
     ) {
-      selected.pop();
-      render();
+      const removed = selected.pop();
+
+      const el = document.querySelector(
+        `.cell[data-index="${removed}"]`
+      );
+
+      el?.classList.remove('selected');
+
+      drawLines();
+      renderCurrent();
     }
+
     return;
   }
+
+  // adjacency check
+  if (
+    selected.length > 0 &&
+    !isAdjacent(selected[selected.length - 1], i)
+  ) {
+    return;
+  }
+
+  selected.push(i);
+
+  const el = document.querySelector(
+    `.cell[data-index="${i}"]`
+  );
+
+  el?.classList.add('selected');
+
+  drawLines();
+  renderCurrent();
+}
 
   // only adjacent cells
   if (
