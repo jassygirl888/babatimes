@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
 <title>Strands — First Bites</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -24,11 +25,17 @@
     font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
     background: #fafafa;
     min-height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 0 12px 40px;
     -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: none;
+    position: fixed;
+    width: 100%;
   }
 
   /* ── Header ── */
@@ -98,7 +105,7 @@
   .grid-wrap {
     position: relative;
     display: inline-block;
-    /* touch-action: none; */
+    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
     margin: 2px 0;
@@ -519,9 +526,9 @@ function getPoint(e) {
 }
 
  wrap.addEventListener('mousedown', e => {isDragging = true;selected = [];handleMove(e);});
- wrap.addEventListener('touchstart', e => {isDragging = true;selected = [];handleMove(e);}, { passive: true });
+ wrap.addEventListener('touchstart', e => {e.preventDefault();isDragging = true; selected = [];handleMove(e);}, { passive: false });
  window.addEventListener('mousemove', handleMove);
- window.addEventListener('touchmove', e => {if (isDragging) {handleMove(e);}}, { passive: true });
+ window.addEventListener('touchmove', e => {if (isDragging) {e.preventDefault();handleMove(e);}}, { passive: false });
  window.addEventListener('mouseup', () => {if (isDragging) {isDragging = false;submitWord();}});
  window.addEventListener('touchend', () => {if (isDragging) {isDragging = false;submitWord();}});
 
