@@ -579,19 +579,36 @@ function showToast(msg) {
 
 function useHint() {
   if (hintsUsed >= MAX_HINTS) return;
+
   const unfound = WORDS.filter(w => !foundWords.has(w.name));
   if (!unfound.length) return;
+
   const word = unfound[Math.floor(Math.random() * unfound.length)];
-  const wordCells = word.path.map(([r,c]) => idx(r,c));
-  const unhinted = wordCells.filter(i => !hintedCells.has(i));
-  if (!unhinted.length) return;
-  hintedCells.add(unhinted[Math.floor(Math.random() * unhinted.length)]);
+
+  // ALWAYS take the first cell in the path
+  const firstCell = idx(word.path[0][0], word.path[0][1]);
+
+  // only add hint if not already revealed
+  if (!hintedCells.has(firstCell)) {
+    hintedCells.add(firstCell);
+  } else {
+    // fallback: if first is already hinted, reveal next unhinted in order
+    const next = word.path
+      .map(([r, c]) => idx(r, c))
+      .find(i => !hintedCells.has(i));
+
+    if (next) hintedCells.add(next);
+  }
+
   hintsUsed++;
   document.getElementById(`hd${hintsUsed - 1}`).classList.add('used');
+
   if (hintsUsed >= MAX_HINTS) hintBtn.disabled = true;
+
   render();
   showToast('Hint revealed!');
 }
+
 
 function showWin() {
   document.getElementById('winOverlay').classList.add('show');
