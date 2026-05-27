@@ -256,9 +256,9 @@
 <p id="status"></p>
 <!-- WIN OVERLAY -->
 <div class="win-overlay" id="winOverlay">
-  <div class="win-emoji">💛</div>
-  <div class="win-title">You got it!</div>
-  <div class="win-sub"> Nice one. Clean solve 💫 </div>
+  <div class="win-emoji">🧔🏽‍♂️❌</div>
+  <div class="win-title">Beard-Free</div>
+  <div class="win-sub"> One year of me asking (begging) you to shave… still hoping we can wax it someday. And no, I’m not giving up on that idea. </div>
 
   <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
 
@@ -287,7 +287,7 @@
 
 <script>
 
-const ANSWER = "LOVEY";
+const ANSWER = "SHAVE";
 let current = "";
 let tries = 0;
 
@@ -402,7 +402,7 @@ function submitGuess() {
   }
 
   if (current === ANSWER) {
-    document.getElementById("status").innerText = "You got it 💛";
+    document.getElementById("status").innerText = "You got it! Please do it!😆";
     document.getElementById("winOverlay").classList.add("show");
   }
 
