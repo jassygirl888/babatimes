@@ -525,24 +525,45 @@ function getPoint(e) {
  window.addEventListener('mouseup', () => {if (isDragging) {isDragging = false;submitWord();}});
  window.addEventListener('touchend', () => {if (isDragging) {isDragging = false;submitWord();}});
 
-
 function handleMove(e) {
   if (!isDragging) return;
+
   const { x, y } = getPoint(e);
   const i = cellFromPoint(x, y);
+
   if (i === null) return;
+
   const cell = flatGrid[i];
+
   if (!cell || foundWords.has(cell.wordName)) return;
+
+  // prevent duplicate selections
+  if (selected[selected.length - 1] === i) return;
+
+  // allow backtracking
   if (selected.includes(i)) {
-    if (selected.length >= 2 && selected[selected.length - 2] === i) {
-      selected.pop(); render();
+    if (
+      selected.length >= 2 &&
+      selected[selected.length - 2] === i
+    ) {
+      selected.pop();
+      render();
     }
     return;
   }
-  // if (selected.length > 0 && !isAdjacent(selected[selected.length - 1], i)) return;
- if (selected.length > 0 &&!isAdjacent(selected[selected.length - 1], i)) {return;}
-  selected.push(i);render();}
- if (selected[selected.length - 1] === i) return;
+
+  // only adjacent cells
+  if (
+    selected.length > 0 &&
+    !isAdjacent(selected[selected.length - 1], i)
+  ) {
+    return;
+  }
+
+  selected.push(i);
+  render();
+}
+
 
 function submitWord() {
   if (selected.length < 3) { selected = []; render(); return; }
