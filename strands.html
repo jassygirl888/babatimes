@@ -98,7 +98,7 @@
   .grid-wrap {
     position: relative;
     display: inline-block;
-    touch-action: none;
+    /* touch-action: none; */
     user-select: none;
     -webkit-user-select: none;
     margin: 2px 0;
@@ -128,6 +128,7 @@
     position: relative;
     z-index: 2;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   .cell.selected {
@@ -473,26 +474,54 @@ function drawLines() {
   }
 }
 
-function cellFromPoint(x, y) {
-  const el = document.elementFromPoint(x, y);
-  if (!el || !el.classList.contains('cell')) return null;
-  return Number(el.dataset.index);
-}
+// function cellFromPoint(x, y) {
+//   const el = document.elementFromPoint(x, y);
+//   if (!el || !el.classList.contains('cell')) return null;
+//   return Number(el.dataset.index);
+// }
 
+function cellFromPoint(x, y) {
+  const cells = [...document.querySelectorAll('.cell')];
+
+  for (const cell of cells) {
+    const rect = cell.getBoundingClientRect();
+
+    if (
+      x >= rect.left &&
+      x <= rect.right &&
+      y >= rect.top &&
+      y <= rect.bottom
+    ) {
+      return Number(cell.dataset.index);
+    }
+  }
+
+  return null;
+}
+ 
 function isAdjacent(a, b) {
   return Math.abs(Math.floor(a/COLS) - Math.floor(b/COLS)) <= 1 &&
          Math.abs((a%COLS) - (b%COLS)) <= 1;
 }
 
 function getPoint(e) {
-  return e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
-                   : { x: e.clientX, y: e.clientY };
+  if (e.touches && e.touches.length > 0) {
+    return {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    };
+  }
+
+  return {
+    x: e.clientX,
+    y: e.clientY
+  };
 }
 
  wrap.addEventListener('mousedown', e => {isDragging = true;selected = [];handleMove(e);});
  wrap.addEventListener('touchstart', e => {isDragging = true;selected = [];handleMove(e);}, { passive: true });
  window.addEventListener('mousemove', handleMove);
- window.addEventListener('touchmove', handleMove, { passive: true });
+ window.addEventListener('touchmove', e => {if (isDragging) {handleMove(e);}}, { passive: true });
  window.addEventListener('mouseup', () => {if (isDragging) {isDragging = false;submitWord();}});
  window.addEventListener('touchend', () => {if (isDragging) {isDragging = false;submitWord();}});
 
@@ -510,10 +539,10 @@ function handleMove(e) {
     }
     return;
   }
-  if (selected.length > 0 && !isAdjacent(selected[selected.length - 1], i)) return;
-  selected.push(i);
-  render();
-}
+  // if (selected.length > 0 && !isAdjacent(selected[selected.length - 1], i)) return;
+ if (selected.length > 0 &&!isAdjacent(selected[selected.length - 1], i)) {return;}
+  selected.push(i);render();}
+ if (selected[selected.length - 1] === i) return;
 
 function submitWord() {
   if (selected.length < 3) { selected = []; render(); return; }
