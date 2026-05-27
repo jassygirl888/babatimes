@@ -1,292 +1,339 @@
-<!-- CHANGES MADE:
-1. Removed found words row entirely
-2. Words stay highlighted only (like real Strands)
-3. Reworked puzzle paths with more diagonal movement
-4. Win screen now only shows message + button
-5. Cleaner authentic gameplay feel
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Strands — First Bites</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root{
-  --bg:#fafafa;
-  --surface:#fff;
-  --border:#d1d1d1;
-  --text:#1b1713;
-  --muted:#766b62;
-  --theme:#3d9cba;
-  --spangram:#d4a843;
-  --selected:#dcdcdc;
-}
-
-body{
-  font-family:"Franklin Gothic Medium","Franklin Gothic",sans-serif;
-  background:var(--bg);
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:0 12px 40px;
-  -webkit-tap-highlight-color:transparent;
-}
-
-/* HEADER */
-
-header{
-  width:100%;
-  max-width:560px;
-  display:grid;
-  grid-template-columns:48px 1fr 48px;
-  align-items:center;
-  padding:18px 0 12px;
-  border-bottom:1.5px solid var(--border);
-}
-
-.back-btn{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  border:1px solid var(--border);
-  background:#fff;
-  cursor:pointer;
-  font-size:18px;
-}
-
-.brand{
-  text-align:center;
-  font-family:'Playfair Display',serif;
-  font-size:28px;
-  font-weight:700;
-}
-
-/* SUBHEADER */
-
-.subheader{
-  width:100%;
-  max-width:560px;
-  text-align:center;
-  padding:10px 0 12px;
-}
-
-.date-label{
-  font-size:11px;
-  letter-spacing:1.5px;
-  color:var(--muted);
-  text-transform:uppercase;
-  margin-bottom:4px;
-}
-
-.clue{
-  font-size:17px;
-}
-
-/* GRID */
-
-.grid-wrap{
-  position:relative;
-  display:inline-block;
-  touch-action:none;
-  user-select:none;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(8,var(--size,50px));
-  gap:5px;
-}
-
-.cell{
-  width:var(--size,50px);
-  height:var(--size,50px);
-  border-radius:7px;
-  border:1px solid var(--border);
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:16px;
-  font-weight:bold;
-  transition:.08s;
-  position:relative;
-  z-index:2;
-}
-
-.cell.selected{
-  background:var(--selected);
-  transform:scale(1.05);
-}
-
-.cell.found-theme{
-  background:var(--theme);
-  border-color:var(--theme);
-  color:white;
-}
-
-.cell.found-spangram{
-  background:var(--spangram);
-  border-color:var(--spangram);
-  color:white;
-}
-
-svg.lines{
-  position:absolute;
-  inset:0;
-  z-index:3;
-  pointer-events:none;
-}
-
-/* CURRENT */
-
-.current-wrap{
-  min-height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  margin-top:8px;
-}
-
-.current-letter{
-  width:22px;
-  height:30px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-bottom:2px solid #222;
-  font-size:18px;
-  font-weight:bold;
-}
-
-/* BOTTOM */
-
-.bottom-bar{
-  width:100%;
-  max-width:560px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding-top:10px;
-}
-
-.progress{
-  font-size:13px;
-  color:var(--muted);
-}
-
-.hint-btn{
-  padding:9px 16px;
-  border-radius:20px;
-  border:1px solid var(--border);
-  background:#fff;
-  cursor:pointer;
-  font-weight:600;
-}
-
-/* TOAST */
-
-.toast{
-  position:fixed;
-  top:18px;
-  left:50%;
-  transform:translateX(-50%) translateY(-70px);
-  background:#333;
-  color:white;
-  padding:10px 18px;
-  border-radius:10px;
-  transition:.25s;
-  z-index:100;
-}
-
-.toast.show{
-  transform:translateX(-50%) translateY(0);
-}
-
-/* WIN */
-
-.win-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(250,250,250,.97);
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:32px;
-  z-index:200;
-}
-
-.win-overlay.show{
-  display:flex;
-}
-
-.win-emoji{
-  font-size:58px;
-  margin-bottom:12px;
-}
-
-.win-title{
-  font-family:'Playfair Display',serif;
-  font-size:30px;
-  margin-bottom:10px;
-}
-
-.win-sub{
-  max-width:320px;
-  line-height:1.7;
-  color:var(--muted);
-  margin-bottom:24px;
-}
-
-.play-btn{
-  padding:12px 28px;
-  border:none;
-  border-radius:24px;
-  background:#333;
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-}
-
-/* MOBILE */
-
-@media (max-width:480px){
-  .grid{
-    --size:38px;
-    gap:4px;
+  :root {
+    --bg: #fafafa;
+    --surface: #fff;
+    --border: #ccc;
+    --text: #1a1410;
+    --muted: #7a6e65;
+    --found-blue: #3d9cba;
+    --spangram: #d4a843;
+    --selected-bg: #ddd;
+    --hint: #b85c38;
   }
 
-  .cell{
-    font-size:13px;
+  body {
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    background: #fafafa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 12px 40px;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .brand{
-    font-size:23px;
+  /* ── Header ── */
+  header {
+    width: 100%;
+    max-width: 560px;
+    display: grid;
+    grid-template-columns: 48px 1fr 48px;
+    align-items: center;
+    padding: 18px 0 12px;
+    border-bottom: 1.5px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  .back-btn {
+    padding: 6px 12px;
+    border: 2px solid #333;
+    border-radius: 20px;
+    background: white;
+    color: #333;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    white-space: nowrap;
+  }
+  .back-btn:hover { background: #f0f0f0; }
+
+  .brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    text-align: center;
+  }
+
+  /* ── Subheader ── */
+  .subheader {
+    width: 100%;
+    max-width: 560px;
+    text-align: center;
+    padding: 8px 0 2px;
+  }
+
+  .date-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+
+  .clue {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  /* ── Grid ── */
+  .grid-wrap {
+    position: relative;
+    display: inline-block;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    margin: 2px 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(8, var(--cell-size, 50px));
+    gap: var(--gap, 5px);
+  }
+
+  .cell {
+    width: var(--cell-size, 50px);
+    height: var(--cell-size, 50px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background: var(--surface);
+    color: #1a1410;
+    border: 1px solid var(--border);
+    transition: background .1s, transform .08s;
+    position: relative;
+    z-index: 2;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .cell.selected {
+    background: var(--selected-bg);
+    border-color: #aaa;
+    transform: scale(1.06);
+  }
+
+  .cell.found-theme {
+    background: var(--found-blue);
+    color: #fff;
+    border-color: var(--found-blue);
+  }
+
+  .cell.found-spangram {
+    background: var(--spangram);
+    color: #fff;
+    border-color: var(--spangram);
+  }
+
+  .cell.hinted {
+    outline: 2px dashed var(--hint);
+    outline-offset: -2px;
+  }
+
+  .cell.shake { animation: shake .35s ease; }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* ── SVG lines ── */
+  svg.lines {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 3;
+    overflow: visible;
+  }
+
+  /* ── Current word display ── */
+  .current-wrap {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    margin: 4px 0;
+  }
+
+  .current-letter {
+    width: 22px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    font-weight: bold;
+    border-bottom: 2.5px solid var(--text);
+    color: var(--text);
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    animation: letterPop .1s ease;
+  }
+  @keyframes letterPop {
+    from { transform: translateY(4px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+  }
+
+  /* ── Bottom bar ── */
+  .bottom-bar {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0 0;
+  }
+
+  .hint-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .hint-btn:hover { background: #eee; }
+  .hint-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .hint-dots { display: flex; gap: 3px; }
+  .hint-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background .3s;
+  }
+  .hint-dot.used { background: var(--hint); }
+
+  .progress-text {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 100;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    white-space: nowrap;
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Win overlay ── */
+  .win-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(250,250,250,0.97);
+    z-index: 200;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+  }
+  .win-overlay.show { display: flex; }
+
+  .win-emoji { font-size: 52px; margin-bottom: 14px; }
+  .win-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .win-sub {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 300px;
+    margin-bottom: 22px;
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+  }
+  .win-words {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center;
+    margin-bottom: 26px;
+  }
+  .win-play-again {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 24px;
+    background: #333;
+    color: #fff;
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ── Responsive cell sizing ── */
+  @media (max-width: 480px) {
+    .grid { --cell-size: 38px; --gap: 4px; }
+    .cell { font-size: 13px; border-radius: 5px; }
+    .brand { font-size: 22px; }
+    .current-letter { font-size: 15px; width: 18px; }
+  }
+
+  @media (max-width: 360px) {
+    .grid { --cell-size: 33px; --gap: 3px; }
+    .cell { font-size: 11px; }
+  }
+
+  
+  @media (max-width: 480px) {
+    .hint-btn {
+    color: var(--found-blue);
   }
 }
 </style>
 </head>
-
 <body>
 
 <header>
-  <button class="back-btn" onclick="history.back()">‹</button>
-  <div class="brand">Strands</div>
-  <div></div>
+  <button class="back-btn" onclick="history.back()">&lt;</button>
+  <span class="brand">Strands</span>
+  <span></span>
 </header>
 
 <div class="subheader">
@@ -294,33 +341,38 @@ svg.lines{
   <div class="clue">First Bites!</div>
 </div>
 
+
 <div class="grid-wrap" id="wrap">
-  <svg class="lines" id="svg"></svg>
+  <svg class="lines" id="linesSvg"></svg>
   <div class="grid" id="grid"></div>
 </div>
 
-<div class="current-wrap" id="current"></div>
+<div class="current-wrap" id="currentWrap"></div>
 
 <div class="bottom-bar">
-  <button class="hint-btn" onclick="useHint()">Hint</button>
-  <div class="progress" id="progress">0 of 6 found</div>
+  <button class="hint-btn" id="hintBtn" onclick="useHint()">
+    <span>Hint</span>
+    <div class="hint-dots">
+      <div class="hint-dot" id="hd0"></div>
+      <div class="hint-dot" id="hd1"></div>
+      <div class="hint-dot" id="hd2"></div>
+    </div>
+  </button>
+  <span class="progress-text" id="progressText">0 of 5 found</span>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<div class="win-overlay" id="win">
+<div class="win-overlay" id="winOverlay">
   <div class="win-emoji">🥂</div>
   <div class="win-title">Happy Anniversary!</div>
-  <div class="win-sub">
-    One year of first bites, last sips, and everything in between.
-    Here's to a lifetime more. ♥
-  </div>
-  <button class="play-btn" onclick="resetGame()">Play Again</button>
+  <div class="win-sub">One year of first bites, last sips, and everything in between. Here's to a lifetime more. ♥</div>
+  <div class="win-words" id="winWords"></div>
+  <button class="win-play-again" onclick="resetGame()">Play Again</button>
 </div>
 
 <script>
-const ROWS = 6;
-const COLS = 8;
+const ROWS = 6, COLS = 8;
 
 const WORDS = [
   { name: 'TABLEFORTWO', displayName: 'Table for Two', type: 'spangram',
@@ -345,287 +397,203 @@ WORDS.forEach(w => {
   });
 });
 
-let selected = [];
-let found = new Set();
-let dragging = false;
+let selected = [], foundWords = new Set(), hintsUsed = 0, isDragging = false, hintedCells = new Set();
+const MAX_HINTS = 3;
 
-const grid = document.getElementById("grid");
-const current = document.getElementById("current");
-const svg = document.getElementById("svg");
-const wrap = document.getElementById("wrap");
+const gridEl = document.getElementById('grid');
+const wrap = document.getElementById('wrap');
+const svgEl = document.getElementById('linesSvg');
+const currentWrap = document.getElementById('currentWrap');
+const hintBtn = document.getElementById('hintBtn');
 
-function render(){
+// Dynamic cell size based on viewport
+function getCellSize() {
+  const vw = window.innerWidth;
+  if (vw <= 360) return 33;
+  if (vw <= 480) return 38;
+  return 50;
+}
 
-  grid.innerHTML = "";
+function render() {
+  const cs = getCellSize();
+  const gap = cs <= 38 ? 4 : 5;
+  document.querySelector('.grid').style.gridTemplateColumns = `repeat(8, ${cs}px)`;
 
-  for(let i=0;i<ROWS*COLS;i++){
-
-    const cellData = gridData[i];
-
-    const div = document.createElement("div");
-    div.className = "cell";
+  gridEl.innerHTML = '';
+  for (let i = 0; i < ROWS * COLS; i++) {
+    const cell = flatGrid[i];
+    const div = document.createElement('div');
+    div.className = 'cell';
     div.dataset.index = i;
-    div.textContent = cellData ? cellData.letter : "";
+    div.textContent = cell ? cell.letter : '';
+    div.style.width = cs + 'px';
+    div.style.height = cs + 'px';
+    div.style.fontSize = cs <= 33 ? '11px' : cs <= 38 ? '13px' : '16px';
 
-    if(cellData){
-
-      const word = WORDS.find(w=>w.name===cellData.word);
-
-      if(found.has(word.name)){
-        div.classList.add(
-          word.type==="spangram"
-          ? "found-spangram"
-          : "found-theme"
-        );
-      }
+    const word = cell ? WORDS.find(w => w.name === cell.wordName) : null;
+    if (word && foundWords.has(word.name)) {
+      div.classList.add(word.type === 'spangram' ? 'found-spangram' : 'found-theme');
+    } else if (selected.includes(i)) {
+      div.classList.add('selected');
     }
-
-    if(selected.includes(i)){
-      div.classList.add("selected");
+    if (hintedCells.has(i) && cell && !foundWords.has(cell.wordName)) {
+      div.classList.add('hinted');
     }
-
-    grid.appendChild(div);
+    gridEl.appendChild(div);
   }
-
-  renderCurrent();
   drawLines();
-
-  document.getElementById("progress").textContent =
-    `${found.size} of ${WORDS.length} found`;
+  renderCurrent();
+  document.getElementById('progressText').textContent = `${foundWords.size} of ${WORDS.length} found`;
 }
 
-function renderCurrent(){
-
-  current.innerHTML = "";
-
-  selected
-    .map(i=>gridData[i]?.letter || "")
-    .forEach(ch=>{
-
-      const el = document.createElement("div");
-      el.className = "current-letter";
-      el.textContent = ch;
-      current.appendChild(el);
-
-    });
+function renderCurrent() {
+  currentWrap.innerHTML = '';
+  selected.map(i => flatGrid[i]?.letter || '').forEach(ch => {
+    const span = document.createElement('span');
+    span.className = 'current-letter';
+    span.textContent = ch;
+    currentWrap.appendChild(span);
+  });
 }
 
-function drawLines(){
-
-  svg.innerHTML = "";
-
-  const wrapRect = wrap.getBoundingClientRect();
-  svg.style.width = wrapRect.width + "px";
-  svg.style.height = wrapRect.height + "px";
-
-  const cells = document.querySelectorAll(".cell");
-
-  for(let i=0;i<selected.length-1;i++){
-
+function drawLines() {
+  const wRect = wrap.getBoundingClientRect();
+  svgEl.style.width = wRect.width + 'px';
+  svgEl.style.height = wRect.height + 'px';
+  svgEl.innerHTML = '';
+  const cells = gridEl.querySelectorAll('.cell');
+  for (let i = 0; i < selected.length - 1; i++) {
     const a = cells[selected[i]].getBoundingClientRect();
     const b = cells[selected[i+1]].getBoundingClientRect();
-
-    const line = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "line"
-    );
-
-    line.setAttribute("x1", a.left - wrapRect.left + a.width/2);
-    line.setAttribute("y1", a.top - wrapRect.top + a.height/2);
-
-    line.setAttribute("x2", b.left - wrapRect.left + b.width/2);
-    line.setAttribute("y2", b.top - wrapRect.top + b.height/2);
-
-    line.setAttribute("stroke","#888");
-    line.setAttribute("stroke-width","4");
-    line.setAttribute("stroke-linecap","round");
-    line.setAttribute("opacity","0.7");
-
-    svg.appendChild(line);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', a.left - wRect.left + a.width/2);
+    line.setAttribute('y1', a.top  - wRect.top  + a.height/2);
+    line.setAttribute('x2', b.left - wRect.left + b.width/2);
+    line.setAttribute('y2', b.top  - wRect.top  + b.height/2);
+    line.setAttribute('stroke', '#888');
+    line.setAttribute('stroke-width', '3');
+    line.setAttribute('stroke-linecap', 'round');
+    line.setAttribute('opacity', '0.65');
+    svgEl.appendChild(line);
   }
 }
 
-function point(e){
-  if(e.touches){
-    return {
-      x:e.touches[0].clientX,
-      y:e.touches[0].clientY
-    };
-  }
-
-  return {
-    x:e.clientX,
-    y:e.clientY
-  };
-}
-
-function cellFromPoint(x,y){
-
-  const el = document.elementFromPoint(x,y);
-
-  if(!el || !el.classList.contains("cell")){
-    return null;
-  }
-
+function cellFromPoint(x, y) {
+  const el = document.elementFromPoint(x, y);
+  if (!el || !el.classList.contains('cell')) return null;
   return Number(el.dataset.index);
 }
 
-function adjacent(a,b){
-
-  return (
-    Math.abs(Math.floor(a/COLS)-Math.floor(b/COLS)) <=1 &&
-    Math.abs((a%COLS)-(b%COLS)) <=1
-  );
+function isAdjacent(a, b) {
+  return Math.abs(Math.floor(a/COLS) - Math.floor(b/COLS)) <= 1 &&
+         Math.abs((a%COLS) - (b%COLS)) <= 1;
 }
 
-function handleMove(e){
+function getPoint(e) {
+  return e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+                   : { x: e.clientX, y: e.clientY };
+}
 
-  if(!dragging) return;
+wrap.addEventListener('mousedown', e => { isDragging = true; selected = []; handleMove(e); });
+wrap.addEventListener('touchstart', e => { e.preventDefault(); isDragging = true; selected = []; handleMove(e); }, { passive: false });
+window.addEventListener('mousemove', handleMove);
+wrap.addEventListener('touchmove', e => { e.preventDefault(); handleMove(e); }, { passive: false });
+window.addEventListener('mouseup',  () => { if (isDragging) { isDragging = false; submitWord(); } });
+window.addEventListener('touchend', () => { if (isDragging) { isDragging = false; submitWord(); } });
 
-  const p = point(e);
-  const i = cellFromPoint(p.x,p.y);
-
-  if(i===null) return;
-
-  const cell = gridData[i];
-
-  if(!cell) return;
-
-  if(found.has(cell.word)) return;
-
-  if(selected.includes(i)){
-
-    if(
-      selected.length >=2 &&
-      selected[selected.length-2]===i
-    ){
-      selected.pop();
-      render();
+function handleMove(e) {
+  if (!isDragging) return;
+  const { x, y } = getPoint(e);
+  const i = cellFromPoint(x, y);
+  if (i === null) return;
+  const cell = flatGrid[i];
+  if (!cell || foundWords.has(cell.wordName)) return;
+  if (selected.includes(i)) {
+    if (selected.length >= 2 && selected[selected.length - 2] === i) {
+      selected.pop(); render();
     }
-
     return;
   }
-
-  if(
-    selected.length &&
-    !adjacent(selected[selected.length-1],i)
-  ){
-    return;
-  }
-
+  if (selected.length > 0 && !isAdjacent(selected[selected.length - 1], i)) return;
   selected.push(i);
-
   render();
 }
 
-function submit(){
-
-  const formed = selected
-    .map(i=>gridData[i]?.letter || "")
-    .join("");
-
-  const match = WORDS.find(w=>w.name===formed);
-
-  if(match){
-
-    found.add(match.name);
-
-    selected = [];
-
-    render();
-
-    if(found.size===WORDS.length){
-      setTimeout(()=>{
-        document.getElementById("win")
-          .classList.add("show");
-      },400);
+function submitWord() {
+  if (selected.length < 3) { selected = []; render(); return; }
+  const word = selected.map(i => flatGrid[i]?.letter || '').join('');
+  const match = WORDS.find(w => w.name === word);
+  if (match && !foundWords.has(match.name)) {
+    const correctSet = new Set(match.path.map(([r,c]) => idx(r,c)));
+    const selectedSet = new Set(selected);
+    if ([...selectedSet].every(i => correctSet.has(i)) && selectedSet.size === correctSet.size) {
+      foundWords.add(match.name);
+      hintedCells = new Set([...hintedCells].filter(i => flatGrid[i]?.wordName !== match.name));
+      selected = [];
+      render();
+      
+      if (foundWords.size === WORDS.length) setTimeout(showWin, 600);
+      return;
     }
-
-    return;
   }
-
-  if(formed.length>=3){
-    toast("Not a word here!");
-  }
-
-  selected = [];
-  render();
+  const cells = gridEl.querySelectorAll('.cell');
+  selected.forEach(i => {
+    cells[i]?.classList.add('shake');
+    setTimeout(() => cells[i]?.classList.remove('shake'), 400);
+  });
+  showToast(word.length < 4 ? 'Too short!' : 'Not a word here!');
+  setTimeout(() => { selected = []; render(); }, 500);
 }
-
-wrap.addEventListener("mousedown",e=>{
-  dragging=true;
-  selected=[];
-  handleMove(e);
-});
-
-wrap.addEventListener("touchstart",e=>{
-  e.preventDefault();
-  dragging=true;
-  selected=[];
-  handleMove(e);
-},{passive:false});
-
-window.addEventListener("mousemove",handleMove);
-
-wrap.addEventListener("touchmove",e=>{
-  e.preventDefault();
-  handleMove(e);
-},{passive:false});
-
-window.addEventListener("mouseup",()=>{
-  if(dragging){
-    dragging=false;
-    submit();
-  }
-});
-
-window.addEventListener("touchend",()=>{
-  if(dragging){
-    dragging=false;
-    submit();
-  }
-});
 
 let toastTimer;
-
-function toast(msg){
-
-  const t = document.getElementById("toast");
-
+function showToast(msg) {
+  const t = document.getElementById('toast');
   t.textContent = msg;
-  t.classList.add("show");
-
+  t.classList.add('show');
   clearTimeout(toastTimer);
-
-  toastTimer = setTimeout(()=>{
-    t.classList.remove("show");
-  },1500);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
 }
 
-function useHint(){
-
-  const remaining = WORDS.filter(w=>!found.has(w.name));
-
-  if(!remaining.length) return;
-
-  toast(remaining[0].name.length > 8
-    ? "Try a longer path..."
-    : "Look diagonally!");
+function useHint() {
+  if (hintsUsed >= MAX_HINTS) return;
+  const unfound = WORDS.filter(w => !foundWords.has(w.name));
+  if (!unfound.length) return;
+  const word = unfound[Math.floor(Math.random() * unfound.length)];
+  const wordCells = word.path.map(([r,c]) => idx(r,c));
+  const unhinted = wordCells.filter(i => !hintedCells.has(i));
+  if (!unhinted.length) return;
+  hintedCells.add(unhinted[Math.floor(Math.random() * unhinted.length)]);
+  hintsUsed++;
+  document.getElementById(`hd${hintsUsed - 1}`).classList.add('used');
+  if (hintsUsed >= MAX_HINTS) hintBtn.disabled = true;
+  render();
+  showToast('Hint revealed!');
 }
 
-function resetGame(){
+function showWin() {
+  document.getElementById('winOverlay').classList.add('show');
+}
 
-  found.clear();
-  selected=[];
+function resetGame() {
+  foundWords.clear();
+  selected = [];
+  hintedCells.clear();
+  hintsUsed = 0;
 
-  document.getElementById("win")
-    .classList.remove("show");
+  for (let i = 0; i < MAX_HINTS; i++) {
+    document.getElementById(`hd${i}`).classList.remove('used');
+  }
+
+  hintBtn.disabled = false;
+
+  document.getElementById('winOverlay').classList.remove('show');
 
   render();
 }
 
+
+window.addEventListener('resize', render);
 render();
 </script>
-
 </body>
 </html>
