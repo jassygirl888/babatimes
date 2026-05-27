@@ -1,311 +1,676 @@
+<!-- CHANGES MADE:
+1. Removed found words row entirely
+2. Words stay highlighted only (like real Strands)
+3. Reworked puzzle paths with more diagonal movement
+4. Win screen now only shows message + button
+5. Cleaner authentic gameplay feel
+-->
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Strands</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Strands — First Bites</title>
 
-  <style>
-    body {
-      font-family: "Franklin Gothic Medium","Franklin Gothic",sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #fafafa;
-      flex-direction: column;
-      text-align: center;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 
-    h1 {
-      font-family: "Roboto Slab", serif;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
+<style>
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    .home {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      padding: 10px 16px;
-      border: 2px solid #333;
-      border-radius: 20px;
-      background: white;
-      color: #333;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 10;
-    }
+:root{
+  --bg:#fafafa;
+  --surface:#fff;
+  --border:#d1d1d1;
+  --text:#1b1713;
+  --muted:#766b62;
+  --theme:#3d9cba;
+  --spangram:#d4a843;
+  --selected:#dcdcdc;
+}
 
-    .grid-wrap {
-      position: relative;
-      display: inline-block;
-      margin-top: 10px;
-      touch-action: none; /* IMPORTANT for drag */
-    }
+body{
+  font-family:"Franklin Gothic Medium","Franklin Gothic",sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:0 12px 40px;
+  -webkit-tap-highlight-color:transparent;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(6, 50px);
-      gap: 6px;
-    }
+/* HEADER */
 
-    .cell {
-      width: 50px;
-      height: 50px;
-      border: 1px solid #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      font-weight: bold;
-      background: white;
-      position: relative;
-      z-index: 2;
-      cursor: pointer;
-    }
+header{
+  width:100%;
+  max-width:560px;
+  display:grid;
+  grid-template-columns:48px 1fr 48px;
+  align-items:center;
+  padding:18px 0 12px;
+  border-bottom:1.5px solid var(--border);
+}
 
-    .cell.selected {
-      background: #ddd;
-    }
+.back-btn{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:#fff;
+  cursor:pointer;
+  font-size:18px;
+}
 
-    .cell.found {
-      background: #3d9cba;
-      color: white;
-    }
+.brand{
+  text-align:center;
+  font-family:'Playfair Display',serif;
+  font-size:28px;
+  font-weight:700;
+}
 
-    svg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-      pointer-events: none;
-    }
+/* SUBHEADER */
 
-    #current {
-      font-weight: bold;
-      margin-top: 10px;
-    }
+.subheader{
+  width:100%;
+  max-width:560px;
+  text-align:center;
+  padding:10px 0 12px;
+}
 
-    button {
-      margin-top: 10px;
-      padding: 8px 12px;
-      border: none;
-      background: #333;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+.date-label{
+  font-size:11px;
+  letter-spacing:1.5px;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+
+.clue{
+  font-size:17px;
+}
+
+/* GRID */
+
+.grid-wrap{
+  position:relative;
+  display:inline-block;
+  touch-action:none;
+  user-select:none;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(8,var(--size,50px));
+  gap:5px;
+}
+
+.cell{
+  width:var(--size,50px);
+  height:var(--size,50px);
+  border-radius:7px;
+  border:1px solid var(--border);
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  font-weight:bold;
+  transition:.08s;
+  position:relative;
+  z-index:2;
+}
+
+.cell.selected{
+  background:var(--selected);
+  transform:scale(1.05);
+}
+
+.cell.found-theme{
+  background:var(--theme);
+  border-color:var(--theme);
+  color:white;
+}
+
+.cell.found-spangram{
+  background:var(--spangram);
+  border-color:var(--spangram);
+  color:white;
+}
+
+svg.lines{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+}
+
+/* CURRENT */
+
+.current-wrap{
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  margin-top:8px;
+}
+
+.current-letter{
+  width:22px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-bottom:2px solid #222;
+  font-size:18px;
+  font-weight:bold;
+}
+
+/* BOTTOM */
+
+.bottom-bar{
+  width:100%;
+  max-width:560px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-top:10px;
+}
+
+.progress{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.hint-btn{
+  padding:9px 16px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:#fff;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%) translateY(-70px);
+  background:#333;
+  color:white;
+  padding:10px 18px;
+  border-radius:10px;
+  transition:.25s;
+  z-index:100;
+}
+
+.toast.show{
+  transform:translateX(-50%) translateY(0);
+}
+
+/* WIN */
+
+.win-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(250,250,250,.97);
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:32px;
+  z-index:200;
+}
+
+.win-overlay.show{
+  display:flex;
+}
+
+.win-emoji{
+  font-size:58px;
+  margin-bottom:12px;
+}
+
+.win-title{
+  font-family:'Playfair Display',serif;
+  font-size:30px;
+  margin-bottom:10px;
+}
+
+.win-sub{
+  max-width:320px;
+  line-height:1.7;
+  color:var(--muted);
+  margin-bottom:24px;
+}
+
+.play-btn{
+  padding:12px 28px;
+  border:none;
+  border-radius:24px;
+  background:#333;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* MOBILE */
+
+@media (max-width:480px){
+  .grid{
+    --size:38px;
+    gap:4px;
+  }
+
+  .cell{
+    font-size:13px;
+  }
+
+  .brand{
+    font-size:23px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<button class="home" onclick="location.href='index.html'">&lt;</button>
+<header>
+  <button class="back-btn" onclick="history.back()">‹</button>
+  <div class="brand">Strands</div>
+  <div></div>
+</header>
 
-<h1>Strands</h1>
-<p>WHERE WE STARTED EATING</p>
+<div class="subheader">
+  <div class="date-label">1st Anniversary Edition</div>
+  <div class="clue">First Bites!</div>
+</div>
 
 <div class="grid-wrap" id="wrap">
-  <svg id="lines"></svg>
+  <svg class="lines" id="svg"></svg>
   <div class="grid" id="grid"></div>
 </div>
 
-<p id="current"></p>
+<div class="current-wrap" id="current"></div>
 
-<button onclick="submitWord()">Submit</button>
+<div class="bottom-bar">
+  <button class="hint-btn" onclick="useHint()">Hint</button>
+  <div class="progress" id="progress">0 of 6 found</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="win-overlay" id="win">
+  <div class="win-emoji">🥂</div>
+  <div class="win-title">Happy Anniversary!</div>
+  <div class="win-sub">
+    One year of first bites, last sips, and everything in between.
+    Here's to a lifetime more. ♥
+  </div>
+  <button class="play-btn" onclick="resetGame()">Play Again</button>
+</div>
 
 <script>
+const ROWS = 6;
+const COLS = 8;
 
-const themeWords = [
-  "AMANO",
-  "MINANTE",
-  "TALESANDFEELINGS",
-  "BELLAMADEUS",
-  "BURNTBEAN"
+const WORDS = [
+
+{
+  name:"TABLEFORTWO",
+  type:"spangram",
+  path:[
+    [0,0],[1,1],[2,1],[3,2],[4,3],[5,4],
+    [5,5],[4,6],[3,7],[2,7],[1,6]
+  ]
+},
+
+{
+  name:"SEASALT",
+  type:"theme",
+  path:[
+    [0,2],[0,3],[1,4],[2,4],[3,5],[4,5],[5,6]
+  ]
+},
+
+{
+  name:"AMANO",
+  type:"theme",
+  path:[
+    [1,0],[2,0],[3,1],[4,1],[5,2]
+  ]
+},
+
+{
+  name:"MINANTE",
+  type:"theme",
+  path:[
+    [0,7],[1,7],[2,6],[3,6],[4,7],[5,7],[4,6]
+  ]
+},
+
+{
+  name:"TIONGBAHRU",
+  type:"theme",
+  path:[
+    [5,0],[4,0],[3,0],[2,1],[1,2],
+    [0,1],[1,1],[2,2],[3,3],[4,4]
+  ]
+},
+
+{
+  name:"KODAWARI",
+  type:"theme",
+  path:[
+    [0,5],[1,5],[2,5],[3,4],[4,4],[5,3],[4,2],[3,2]
+  ]
+}
+
 ];
 
-const spangram = "WHEREWESTARTEDEATING";
-const size = 6;
+const gridData = Array(ROWS * COLS).fill(null);
 
-let letters = themeWords.join("").split("").sort(() => Math.random() - 0.5);
+function idx(r,c){
+  return r * COLS + c;
+}
 
-let grid = letters.map((letter, i) => ({
-  letter,
-  row: Math.floor(i / size),
-  col: i % size,
-  found: false
-}));
+WORDS.forEach(w=>{
+  w.path.forEach(([r,c],i)=>{
+    gridData[idx(r,c)] = {
+      letter:w.name[i],
+      word:w.name
+    };
+  });
+});
 
 let selected = [];
-let found = [];
+let found = new Set();
+let dragging = false;
 
-const gridEl = document.getElementById("grid");
-const svg = document.getElementById("lines");
+const grid = document.getElementById("grid");
+const current = document.getElementById("current");
+const svg = document.getElementById("svg");
 const wrap = document.getElementById("wrap");
 
-let isDragging = false;
+function render(){
 
-function render() {
+  grid.innerHTML = "";
 
-  gridEl.innerHTML = "";
+  for(let i=0;i<ROWS*COLS;i++){
 
-  grid.forEach((c, i) => {
+    const cellData = gridData[i];
 
     const div = document.createElement("div");
     div.className = "cell";
-    div.innerText = c.letter;
-
-    if (selected.includes(i)) div.classList.add("selected");
-    if (c.found) div.classList.add("found");
-
     div.dataset.index = i;
+    div.textContent = cellData ? cellData.letter : "";
 
-    gridEl.appendChild(div);
-  });
+    if(cellData){
 
-  drawLines();
-}
+      const word = WORDS.find(w=>w.name===cellData.word);
 
-function indexFromPoint(x, y) {
+      if(found.has(word.name)){
+        div.classList.add(
+          word.type==="spangram"
+          ? "found-spangram"
+          : "found-theme"
+        );
+      }
+    }
 
-  const el = document.elementFromPoint(x, y);
-  if (!el || !el.classList.contains("cell")) return null;
-  return Number(el.dataset.index);
-}
+    if(selected.includes(i)){
+      div.classList.add("selected");
+    }
 
-function isAdjacent(a, b) {
-  const A = grid[a];
-  const B = grid[b];
-
-  return Math.abs(A.row - B.row) <= 1 &&
-         Math.abs(A.col - B.col) <= 1;
-}
-
-/* =========================
-   DRAG START
-========================= */
-wrap.addEventListener("mousedown", startDrag);
-wrap.addEventListener("touchstart", startDrag);
-
-function startDrag(e) {
-  isDragging = true;
-  selected = [];
-
-  handleMove(e);
-}
-
-/* =========================
-   DRAG MOVE
-========================= */
-wrap.addEventListener("mousemove", handleMove);
-wrap.addEventListener("touchmove", handleMove);
-
-function handleMove(e) {
-
-  if (!isDragging) return;
-
-  let x = e.touches ? e.touches[0].clientX : e.clientX;
-  let y = e.touches ? e.touches[0].clientY : e.clientY;
-
-  const i = indexFromPoint(x, y);
-  if (i === null) return;
-
-  if (grid[i].found) return;
-
-  if (selected.includes(i)) return;
-
-  if (selected.length > 0) {
-    const last = selected[selected.length - 1];
-    if (!isAdjacent(last, i)) return;
+    grid.appendChild(div);
   }
 
-  selected.push(i);
-  updateCurrent();
-  render();
+  renderCurrent();
+  drawLines();
+
+  document.getElementById("progress").textContent =
+    `${found.size} of ${WORDS.length} found`;
 }
 
-/* =========================
-   DRAG END
-========================= */
-window.addEventListener("mouseup", endDrag);
-window.addEventListener("touchend", endDrag);
+function renderCurrent(){
 
-function endDrag() {
-  isDragging = false;
+  current.innerHTML = "";
+
+  selected
+    .map(i=>gridData[i]?.letter || "")
+    .forEach(ch=>{
+
+      const el = document.createElement("div");
+      el.className = "current-letter";
+      el.textContent = ch;
+      current.appendChild(el);
+
+    });
 }
 
-/* =========================
-   CURRENT WORD
-========================= */
-function updateCurrent() {
-  document.getElementById("current").innerText =
-    selected.map(i => grid[i].letter).join("");
-}
+function drawLines(){
 
-/* =========================
-   LINES
-========================= */
-function drawLines() {
-
-  const cells = document.querySelectorAll(".cell");
-  const rect = wrap.getBoundingClientRect();
-
-  svg.setAttribute("width", rect.width);
-  svg.setAttribute("height", rect.height);
   svg.innerHTML = "";
 
-  for (let i = 0; i < selected.length - 1; i++) {
+  const wrapRect = wrap.getBoundingClientRect();
+  svg.style.width = wrapRect.width + "px";
+  svg.style.height = wrapRect.height + "px";
+
+  const cells = document.querySelectorAll(".cell");
+
+  for(let i=0;i<selected.length-1;i++){
 
     const a = cells[selected[i]].getBoundingClientRect();
-    const b = cells[selected[i + 1]].getBoundingClientRect();
+    const b = cells[selected[i+1]].getBoundingClientRect();
 
-    const x1 = a.left - rect.left + 25;
-    const y1 = a.top - rect.top + 25;
-    const x2 = b.left - rect.left + 25;
-    const y2 = b.top - rect.top + 25;
+    const line = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "line"
+    );
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", a.left - wrapRect.left + a.width/2);
+    line.setAttribute("y1", a.top - wrapRect.top + a.height/2);
 
-    line.setAttribute("x1", x1);
-    line.setAttribute("y1", y1);
-    line.setAttribute("x2", x2);
-    line.setAttribute("y2", y2);
-    line.setAttribute("stroke", "#666");
-    line.setAttribute("stroke-width", "3");
-    line.setAttribute("stroke-linecap", "round");
+    line.setAttribute("x2", b.left - wrapRect.left + b.width/2);
+    line.setAttribute("y2", b.top - wrapRect.top + b.height/2);
+
+    line.setAttribute("stroke","#888");
+    line.setAttribute("stroke-width","4");
+    line.setAttribute("stroke-linecap","round");
+    line.setAttribute("opacity","0.7");
 
     svg.appendChild(line);
   }
 }
 
-/* =========================
-   SUBMIT
-========================= */
-function submitWord() {
-
-  const word = selected.map(i => grid[i].letter).join("");
-
-  if (themeWords.includes(word) && !found.includes(word)) {
-
-    found.push(word);
-    selected.forEach(i => grid[i].found = true);
+function point(e){
+  if(e.touches){
+    return {
+      x:e.touches[0].clientX,
+      y:e.touches[0].clientY
+    };
   }
 
-  else if (word === spangram) {
+  return {
+    x:e.clientX,
+    y:e.clientY
+  };
+}
 
-    selected.forEach(i => grid[i].found = true);
+function cellFromPoint(x,y){
+
+  const el = document.elementFromPoint(x,y);
+
+  if(!el || !el.classList.contains("cell")){
+    return null;
+  }
+
+  return Number(el.dataset.index);
+}
+
+function adjacent(a,b){
+
+  return (
+    Math.abs(Math.floor(a/COLS)-Math.floor(b/COLS)) <=1 &&
+    Math.abs((a%COLS)-(b%COLS)) <=1
+  );
+}
+
+function handleMove(e){
+
+  if(!dragging) return;
+
+  const p = point(e);
+  const i = cellFromPoint(p.x,p.y);
+
+  if(i===null) return;
+
+  const cell = gridData[i];
+
+  if(!cell) return;
+
+  if(found.has(cell.word)) return;
+
+  if(selected.includes(i)){
+
+    if(
+      selected.length >=2 &&
+      selected[selected.length-2]===i
+    ){
+      selected.pop();
+      render();
+    }
+
+    return;
+  }
+
+  if(
+    selected.length &&
+    !adjacent(selected[selected.length-1],i)
+  ){
+    return;
+  }
+
+  selected.push(i);
+
+  render();
+}
+
+function submit(){
+
+  const formed = selected
+    .map(i=>gridData[i]?.letter || "")
+    .join("");
+
+  const match = WORDS.find(w=>w.name===formed);
+
+  if(match){
+
+    found.add(match.name);
+
+    selected = [];
+
+    render();
+
+    if(found.size===WORDS.length){
+      setTimeout(()=>{
+        document.getElementById("win")
+          .classList.add("show");
+      },400);
+    }
+
+    return;
+  }
+
+  if(formed.length>=3){
+    toast("Not a word here!");
   }
 
   selected = [];
-  updateCurrent();
+  render();
+}
+
+wrap.addEventListener("mousedown",e=>{
+  dragging=true;
+  selected=[];
+  handleMove(e);
+});
+
+wrap.addEventListener("touchstart",e=>{
+  e.preventDefault();
+  dragging=true;
+  selected=[];
+  handleMove(e);
+},{passive:false});
+
+window.addEventListener("mousemove",handleMove);
+
+wrap.addEventListener("touchmove",e=>{
+  e.preventDefault();
+  handleMove(e);
+},{passive:false});
+
+window.addEventListener("mouseup",()=>{
+  if(dragging){
+    dragging=false;
+    submit();
+  }
+});
+
+window.addEventListener("touchend",()=>{
+  if(dragging){
+    dragging=false;
+    submit();
+  }
+});
+
+let toastTimer;
+
+function toast(msg){
+
+  const t = document.getElementById("toast");
+
+  t.textContent = msg;
+  t.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(()=>{
+    t.classList.remove("show");
+  },1500);
+}
+
+function useHint(){
+
+  const remaining = WORDS.filter(w=>!found.has(w.name));
+
+  if(!remaining.length) return;
+
+  toast(remaining[0].name.length > 8
+    ? "Try a longer path..."
+    : "Look diagonally!");
+}
+
+function resetGame(){
+
+  found.clear();
+  selected=[];
+
+  document.getElementById("win")
+    .classList.remove("show");
+
   render();
 }
 
 render();
-
 </script>
 
 </body>
