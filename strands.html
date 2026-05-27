@@ -410,22 +410,13 @@ const currentWrap = document.getElementById('currentWrap');
 const hintBtn = document.getElementById('hintBtn');
 
 // CLEAN TAP-TO-SELECT SYSTEM
-
 gridEl.addEventListener('click', (e) => {
   const cell = e.target.closest('.cell');
   if (!cell) return;
-  
-  if (!isAdjacent(last, i)) {
-  submitWord();
-  selected = [];
-  return;
-}
-}
 
   const i = Number(cell.dataset.index);
   const data = flatGrid[i];
 
-  // ignore empty / already found letters
   if (!data || foundWords.has(data.wordName)) return;
 
   // first tap starts selection
@@ -440,7 +431,7 @@ gridEl.addEventListener('click', (e) => {
   // prevent double tap
   if (i === last) return;
 
-  // BACKTRACK (tap previous cell to undo last move)
+  // backtrack
   if (selected.length >= 2 && selected[selected.length - 2] === i) {
     selected.pop();
     render();
@@ -453,6 +444,7 @@ gridEl.addEventListener('click', (e) => {
   selected.push(i);
   render();
 });
+
 
 // ===============================
 // OPTIONAL: improve mobile feel
