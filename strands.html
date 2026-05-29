@@ -649,7 +649,25 @@ function showWin() {
   document.getElementById('winOverlay').classList.add('show');
 }
 
+function admirePuzzle() {
+  admireMode = true;
+
+  document.getElementById('winOverlay').classList.remove('show');
+
+  showToast('Admiring puzzle ✨');
+
+  // disable hint button
+  hintBtn.disabled = true;
+
+  // disable interactions
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.style.pointerEvents = 'none';
+  });
+}
+    
 function resetGame() {
+  admireMode = false;
+
   foundWords.clear();
   selected = [];
   hintedCells.clear();
@@ -662,6 +680,11 @@ function resetGame() {
   hintBtn.disabled = false;
 
   document.getElementById('winOverlay').classList.remove('show');
+
+  // restore interactions
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.style.pointerEvents = 'auto';
+  });
 
   render();
 }
